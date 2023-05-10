@@ -3,6 +3,7 @@ import queue
 import time
 
 import cv2
+from visionapi.videosource_pb2 import VideoFrame
 
 from .config import VideoSourceConfig
 from .errors import *
@@ -53,7 +54,7 @@ class _VideoLoop(mp.Process):
                 break
 
             try:
-                self.frame_queue.put(frame, block=False)
+                self.frame_queue.put(self._to_proto(frame), block=False)
             except queue.Full:
                 time.sleep(0.01)
 
@@ -62,3 +63,12 @@ class _VideoLoop(mp.Process):
         # Technically the queue needs to be drained before exiting (otherwise the queue feeder thread will block indefinitely)
         # As we do not care about the data in this case, we can take the shortcut below.
         self.frame_queue.cancel_join_thread()
+
+    def _to_proto(self, frame):
+        vf = VideoFrame()
+        vf.timestamp_utc_ms = time.time_ns() // 1000
+        vf.shape[:] = frame.shape
+        vf.frame = frame.tobytes()
+
+        return vf.SerializeToString()
+
