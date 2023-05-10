@@ -17,6 +17,9 @@ class VideoSource:
         self.frame_queue = mp.Queue(5)
         self.video_loop = _VideoLoop(self.stop_event, self.frame_queue, config.uri)
 
+    def start(self):
+        self.video_loop.start()
+
     def stop(self):
         self.stop_event.set()
     
