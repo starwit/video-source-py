@@ -59,19 +59,6 @@ class _VideoLoop(mp.Process):
 
         cap.release()
 
-        # The queue must be drained before finishing, otherwise the queue feeder thread will not exit
-        self._drain_queue()
-
-    def _drain_queue(self):
-        # Remove one element to make room for the sentinel element (in case the queue is full)
-        try:
-            self.frame_queue.get_nowait()
-        except:
-            pass
-
-        # Put the sentinel (the explicit end) into the queue
-        self.frame_queue.put(None, block=True)
-
-        # Now we can be sure that the queue is empty if we remove all elements until we see the sentinel
-        while self.frame_queue.get(block=True) is not None:
-            pass
+        # Technically the queue needs to be drained before exiting (otherwise the queue feeder thread will block indefinitely)
+        # As we do not care about the data in this case, we can take the shortcut below.
+        self.frame_queue.cancel_join_thread()
