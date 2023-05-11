@@ -3,7 +3,7 @@ import queue
 import time
 
 import cv2
-from visionapi.videosource_pb2 import VideoFrame
+from visionapi.proto.videosource_pb2 import VideoFrame
 
 from .config import VideoSourceConfig
 from .errors import *
