@@ -3,7 +3,7 @@ import queue
 import time
 
 import cv2
-from visionapi.videosource_pb2 import VideoFrame
+from visionapi.videosource_pb2 import VideoFrame, Shape
 
 from .config import VideoSourceConfig
 from .errors import *
@@ -67,7 +67,9 @@ class _VideoLoop(mp.Process):
     def _to_proto(self, frame):
         vf = VideoFrame()
         vf.timestamp_utc_ms = time.time_ns() // 1000
-        vf.shape[:] = frame.shape
+        shape = Shape()
+        shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
+        vf.shape.CopyFrom(shape)
         vf.frame_data = frame.tobytes()
 
         return vf.SerializeToString()
