@@ -13,10 +13,9 @@ class VideoSource:
     def __init__(self, config: VideoSourceConfig) -> None:
         if config.__class__.__name__ != 'VideoSourceConfig':
             raise TypeError('Config must be of type VideoSourceConfig')
-        self.config = config
         self.stop_event = mp.Event()
         self.frame_queue = mp.Queue(5)
-        self.video_loop = _VideoLoop(self.stop_event, self.frame_queue, config.uri)
+        self.video_loop = _VideoLoop(self.stop_event, self.frame_queue, config)
 
     def start(self):
         self.video_loop.start()
@@ -37,32 +36,52 @@ class VideoSource:
             raise NoFrameError(f'No frame has been received after waiting for {timeout}s')
 
 class _VideoLoop(mp.Process):
-    def __init__(self, stop_event, frame_queue: mp.Queue, uri: str, *args, **kwargs):
+    def __init__(self, stop_event, frame_queue: mp.Queue, config: VideoSourceConfig, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.stop_event = stop_event
         self.frame_queue = frame_queue
-        self.uri = uri
+        self.config = config
+
+        # These should be used within the process only!
+        self.cap = None
+        self.source_fps = None
+        self.last_frame_ts = 0
 
     def run(self):
-        cap = cv2.VideoCapture(self.uri)
-        if not cap.isOpened():
-            raise IOError(f'Cannot open video source at {self.uri}')
-
         while not self.stop_event.is_set():
-            frame_ok, frame = cap.read()
+            if not self._ensure_videosource():
+                time.sleep(1.0)
+                continue
+
+            frame_ok, frame = self.cap.read()
             if not frame_ok:
-                break
+                time.sleep(0.01)
+                continue
 
             try:
                 self.frame_queue.put(self._to_proto(frame), block=False)
             except queue.Full:
                 time.sleep(0.01)
+                continue
 
-        cap.release()
+            self._wait_next_frame()
+            self.last_frame_ts = time.monotonic_ns()
+
+        self.cap.release()
 
         # Technically the queue needs to be drained before exiting (otherwise the queue feeder thread will block indefinitely)
         # As we do not care about the data in this case, we can take the shortcut below.
         self.frame_queue.cancel_join_thread()
+
+    def _ensure_videosource(self):
+        if self.cap is None:
+            self.cap = cv2.VideoCapture(self.config.uri)
+        if not self.cap.isOpened():
+            self.cap.release()
+            self.cap = None
+            return False
+        self.source_fps = self.cap.get(cv2.CAP_PROP_FPS)
+        return True
 
     def _to_proto(self, frame):
         vf = VideoFrame()
@@ -73,4 +92,13 @@ class _VideoLoop(mp.Process):
         vf.frame_data = frame.tobytes()
 
         return vf.SerializeToString()
+    
+    def _wait_next_frame(self):
+        if self.config.use_source_fps and self.source_fps > 0:
+            current_time = time.monotonic_ns()
+            frame_time = 1/self.source_fps * 1_000_000_000
 
+            wait_target = self.last_frame_ts + frame_time
+            time_to_sleep = wait_target - current_time
+            if time_to_sleep > 0:
+                time.sleep(time_to_sleep / 1_000_000_000)

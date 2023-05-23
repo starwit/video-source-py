@@ -6,7 +6,7 @@ from time import perf_counter
 
 VIDEO_URI = 'path/to/your/video'
 
-config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI)
+config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI, use_source_fps=True)
 
 source = VideoSource(config)
 source.start()
