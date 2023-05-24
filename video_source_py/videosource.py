@@ -69,9 +69,7 @@ class _VideoLoop(mp.Process):
 
         self.cap.release()
 
-        # Technically the queue needs to be drained before exiting (otherwise the queue feeder thread will block indefinitely)
-        # As we do not care about the data in this case, we can take the shortcut below.
-        self.frame_queue.cancel_join_thread()
+        self._drain_queue(self.frame_queue)
 
     def _ensure_videosource(self):
         if self.cap is None:
@@ -102,3 +100,10 @@ class _VideoLoop(mp.Process):
             time_to_sleep = wait_target - current_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep / 1_000_000_000)
+
+    def _drain_queue(self, q: mp.Queue):
+        try:
+            while True:
+                q.get(block=True, timeout=1)
+        except queue.Empty:
+            pass
