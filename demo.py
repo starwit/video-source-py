@@ -4,15 +4,14 @@ from visionapi.videosource_pb2 import VideoFrame
 import cv2
 from time import perf_counter
 
-VIDEO_URI = 'path/to/your/video'
+VIDEO_URI = '/home/florian/Downloads/ArchWestMainStreetEB.mp4'
 
 config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI, use_source_fps=True)
 
 source = VideoSource(config)
-source.start()
 
 while True:
-    frame_raw = source.get_frame()
+    frame_raw = source.get()
 
     start = perf_counter()
     vf = VideoFrame()
@@ -24,7 +23,7 @@ while True:
         
     cv2.imshow('default', frame)
     if cv2.waitKey(1) == ord('q'):
-        source.stop()
         break
 
+source.close()
 cv2.destroyAllWindows()

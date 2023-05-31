@@ -1,45 +1,16 @@
 import multiprocessing as mp
 import queue
 import time
+from typing import Any
 
 import cv2
 from visionapi.videosource_pb2 import VideoFrame, Shape
 
 from .config import VideoSourceConfig
-from .errors import *
 
 
 class VideoSource:
-    def __init__(self, config: VideoSourceConfig) -> None:
-        if config.__class__.__name__ != 'VideoSourceConfig':
-            raise TypeError('Config must be of type VideoSourceConfig')
-        self.stop_event = mp.Event()
-        self.frame_queue = mp.Queue(5)
-        self.video_loop = _VideoLoop(self.stop_event, self.frame_queue, config)
-
-    def start(self):
-        self.video_loop.start()
-
-    def stop(self):
-        self.stop_event.set()
-    
-    def get_frame(self, block=True, timeout=10):
-        '''
-            Raises NoFrameError if no frame is available (after having waited for timeout if block is True).
-            Must not be called after .stop().
-        '''
-        if self.stop_event.is_set():
-            raise ClosedError('VideoSource has already been closed')
-        try:
-            return self.frame_queue.get(block, timeout)
-        except queue.Empty:
-            raise NoFrameError(f'No frame has been received after waiting for {timeout}s')
-
-class _VideoLoop(mp.Process):
-    def __init__(self, stop_event, frame_queue: mp.Queue, config: VideoSourceConfig, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.stop_event = stop_event
-        self.frame_queue = frame_queue
+    def __init__(self, config: VideoSourceConfig):
         self.config = config
 
         # These should be used within the process only!
@@ -47,29 +18,25 @@ class _VideoLoop(mp.Process):
         self.source_fps = None
         self.last_frame_ts = 0
 
-    def run(self):
-        while not self.stop_event.is_set():
-            if not self._ensure_videosource():
-                time.sleep(1.0)
-                continue
+    def __call__(self) -> Any:
+        return self.get()
 
-            frame_ok, frame = self.cap.read()
-            if not frame_ok:
-                time.sleep(0.01)
-                continue
+    def get(self):
+        while not self._ensure_videosource():
+            time.sleep(1.0)
 
-            try:
-                self.frame_queue.put(self._to_proto(frame), block=False)
-            except queue.Full:
-                time.sleep(0.01)
-                continue
+        self._wait_next_frame()
 
-            self._wait_next_frame()
-            self.last_frame_ts = time.monotonic_ns()
+        frame_ok, frame = self.cap.read()
+        if not frame_ok:
+            raise NoFrameError()
 
+        self.last_frame_ts = time.monotonic_ns()
+        
+        return self._to_proto(frame)
+
+    def close(self):
         self.cap.release()
-
-        self._drain_queue(self.frame_queue)
 
     def _ensure_videosource(self):
         if self.cap is None:
@@ -100,10 +67,3 @@ class _VideoLoop(mp.Process):
             time_to_sleep = wait_target - current_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep / 1_000_000_000)
-
-    def _drain_queue(self, q: mp.Queue):
-        try:
-            while True:
-                q.get(block=True, timeout=1)
-        except queue.Empty:
-            pass
