@@ -16,7 +16,7 @@ class VideoSource:
         self.source_fps = None
         self.last_frame_ts = 0
 
-    def __call__(self) -> Any:
+    def __call__(self, *args, **kwargs) -> Any:
         return self.get()
 
     def get(self):
