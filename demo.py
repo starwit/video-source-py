@@ -18,8 +18,7 @@ while True:
     vf.ParseFromString(frame_raw)
 
     frame = np.frombuffer(vf.frame_data, dtype=np.uint8).reshape((vf.shape.height, vf.shape.width, vf.shape.channels))
-    stop = perf_counter()
-    print(f'{stop - start}')
+    print(f'{perf_counter() - start}')
         
     cv2.imshow('default', frame)
     if cv2.waitKey(1) == ord('q'):

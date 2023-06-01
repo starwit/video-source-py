@@ -1,5 +1,3 @@
-import multiprocessing as mp
-import queue
 import time
 from typing import Any
 
@@ -29,7 +27,7 @@ class VideoSource:
 
         frame_ok, frame = self.cap.read()
         if not frame_ok:
-            raise NoFrameError()
+            raise IOError("No frame received")
 
         self.last_frame_ts = time.monotonic_ns()
         
