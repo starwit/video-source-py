@@ -7,11 +7,14 @@ from visionapi.videosource_pb2 import VideoFrame, Shape
 from .config import VideoSourceConfig
 
 
+class SourceUnavailableError(Exception):
+    pass
+
+
 class VideoSource:
     def __init__(self, config: VideoSourceConfig):
         self.config = config
 
-        # These should be used within the process only!
         self.cap = None
         self.source_fps = None
         self.last_frame_ts = 0
@@ -20,14 +23,14 @@ class VideoSource:
         return self.get()
 
     def get(self):
-        while not self._ensure_videosource():
-            time.sleep(1.0)
+        if not self._ensure_videosource():
+            return None
 
         self._wait_next_frame()
 
         frame_ok, frame = self.cap.read()
         if not frame_ok:
-            raise IOError("No frame received")
+            return None
 
         self.last_frame_ts = time.monotonic_ns()
         
