@@ -11,7 +11,7 @@ packages = [{include = "video_source_py"}]
 python = "^3.10"
 pydantic = "^1.10.7"
 opencv-python = "^4.7.0.72"
-visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", develop = true }
+visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "0.3.1" }
 
 
 [tool.poetry.group.dev.dependencies]

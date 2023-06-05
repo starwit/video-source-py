@@ -1,6 +1,6 @@
 from video_source_py.videosource import VideoSource, VideoSourceConfig
 import numpy as np
-from visionapi.videosource_pb2 import VideoFrame
+from visionapi.messages_pb2 import VideoFrame
 import cv2
 from time import perf_counter
 

@@ -2,6 +2,7 @@
 
 ## How to setup
 - Make sure you have Poetry installed (otherwise head over to https://python-poetry.org/docs/#installing-with-the-official-installer)
+- Source the script `set_local_git_creds.sh` (and use a read-only token with minimal permissions)
 - Run `poetry install`
 - Run the below script with `poetry run <scriptfile>`
 

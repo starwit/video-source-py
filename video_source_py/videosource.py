@@ -2,7 +2,7 @@ import time
 from typing import Any
 
 import cv2
-from visionapi.videosource_pb2 import VideoFrame, Shape
+from visionapi.messages_pb2 import VideoFrame, Shape
 
 from .config import VideoSourceConfig
 
