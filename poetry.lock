@@ -1844,7 +1844,7 @@ dev = ["flake8 (<4.0.0)", "flake8-annotations", "flake8-bugbear", "flake8-commas
 
 [[package]]
 name = "visionapi"
-version = "0.3.1"
+version = "0.3.2"
 description = ""
 optional = false
 python-versions = "^3.10"
@@ -1857,8 +1857,8 @@ protobuf = "^4.23.0"
 [package.source]
 type = "git"
 url = "https://github.com/starwit/vision-api.git"
-reference = "0.3.1"
-resolved_reference = "bf3b2d8f2d884112600f78a73210b653bb0fa5c7"
+reference = "0.3.2"
+resolved_reference = "135b576e578ea1675eeda4782bd79e2d35f97afa"
 subdirectory = "python/visionapi"
 
 [[package]]
@@ -1928,4 +1928,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9ef36329b48fb1a5c746e0587e1fd92ac1026ff0b4a555c2c62972e0106287af"
+content-hash = "86366309e6d4e0996c723c25b86f61596f04c79e521076ba3b62493e500b2b21"
