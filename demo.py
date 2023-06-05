@@ -6,12 +6,14 @@ from time import perf_counter
 
 VIDEO_URI = '/home/florian/Downloads/ArchWestMainStreetEB.mp4'
 
-config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI, use_source_fps=True)
+config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI, use_source_fps=True, log_level='DEBUG')
 
 source = VideoSource(config)
 
 while True:
     frame_raw = source.get()
+    if frame_raw is None:
+        break
 
     start = perf_counter()
     vf = VideoFrame()

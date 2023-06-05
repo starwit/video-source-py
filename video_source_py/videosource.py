@@ -5,15 +5,19 @@ import cv2
 from visionapi.messages_pb2 import VideoFrame, Shape
 
 from .config import VideoSourceConfig
+import logging
 
-
-class SourceUnavailableError(Exception):
-    pass
+logger = logging.getLogger(__name__)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s'))
+logger.addHandler(stream_handler)
+logger.setLevel(logging.WARNING)
 
 
 class VideoSource:
     def __init__(self, config: VideoSourceConfig):
         self.config = config
+        logger.setLevel(self.config.log_level.value)
 
         self.cap = None
         self.source_fps = None
@@ -42,11 +46,20 @@ class VideoSource:
     def _ensure_videosource(self):
         if self.cap is None:
             self.cap = cv2.VideoCapture(self.config.uri)
+            if self.cap.isOpened():
+                self.source_fps = self.cap.get(cv2.CAP_PROP_FPS)
+                logger.info(f'Successfully established connection to {self.config.uri}')
+                return True
+            else:
+                logger.warn(f'Could not open source at {self.config.uri}')
+                return False
+
         if not self.cap.isOpened():
             self.cap.release()
             self.cap = None
+            logger.warn(f'Source not available anymore at {self.config.uri}')
             return False
-        self.source_fps = self.cap.get(cv2.CAP_PROP_FPS)
+        
         return True
 
     def _to_proto(self, frame):
