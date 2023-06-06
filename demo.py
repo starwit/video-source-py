@@ -20,7 +20,7 @@ while True:
     vf.ParseFromString(frame_raw)
 
     frame = np.frombuffer(vf.frame_data, dtype=np.uint8).reshape((vf.shape.height, vf.shape.width, vf.shape.channels))
-    print(f'{perf_counter() - start}')
+    print(f'Frame decoding took {perf_counter() - start} s')
         
     cv2.imshow('default', frame)
     if cv2.waitKey(1) == ord('q'):

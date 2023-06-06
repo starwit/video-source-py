@@ -1,16 +1,14 @@
+import logging
 import time
 from typing import Any
 
 import cv2
-from visionapi.messages_pb2 import VideoFrame, Shape
+from visionapi.messages_pb2 import Shape, VideoFrame
 
 from .config import VideoSourceConfig
-import logging
 
+logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
 logger = logging.getLogger(__name__)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(logging.Formatter(fmt='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s'))
-logger.addHandler(stream_handler)
 logger.setLevel(logging.WARNING)
 
 
