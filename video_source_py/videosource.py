@@ -9,7 +9,6 @@ from .config import VideoSourceConfig
 
 logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
 
 
 class VideoSource:
@@ -26,6 +25,7 @@ class VideoSource:
 
     def get(self):
         if not self._ensure_videosource():
+            time.sleep(self.config.reconnect_backoff_time)
             return None
 
         self._wait_next_frame()
