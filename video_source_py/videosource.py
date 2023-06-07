@@ -62,6 +62,7 @@ class VideoSource:
 
     def _to_proto(self, frame):
         vf = VideoFrame()
+        vf.source_id = self.config.id
         vf.timestamp_utc_ms = time.time_ns() // 1000
         shape = Shape()
         shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
