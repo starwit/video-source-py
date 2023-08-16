@@ -1,0 +1,8 @@
+id: video1
+uri: /path/that/opencv/understands
+# This limits fps to the fps of the source (only really makes sense with video files, if a camera shall be simulated)
+use_source_fps: False
+log_level: DEBUG
+output:
+  host: redis-host
+  port: 6379

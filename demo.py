@@ -4,9 +4,9 @@ from visionapi.messages_pb2 import VideoFrame
 import cv2
 from time import perf_counter
 
-VIDEO_URI = '/home/florian/Downloads/ArchWestMainStreetEB.mp4'
+VIDEO_URI = '/home/florian/workspaces/carmel/videos/RangelineSMedicalDr.mp4'
 
-config = VideoSourceConfig(id='a', name='test', uri=VIDEO_URI, use_source_fps=True, log_level='DEBUG')
+config = VideoSourceConfig(id='video1', uri=VIDEO_URI, use_source_fps=True, log_level='DEBUG')
 
 source = VideoSource(config)
 
