@@ -19,7 +19,7 @@ class LogLevel(str, Enum):
     DEBUG = 'DEBUG'
 
 
-class ConnectionConfig(BaseModel):
+class RedisConfig(BaseModel):
     host: str
     port: conint(ge=1, le=65536)
 
@@ -30,7 +30,7 @@ class VideoSourceConfig(BaseSettings):
     use_source_fps: bool = False
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
-    output: ConnectionConfig = None
+    redis: RedisConfig = None
 
     class Config:
         env_nested_delimiter = '__'

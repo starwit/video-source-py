@@ -26,8 +26,8 @@ if __name__ == '__main__':
 
     # Init output
     redis_conn = redis.Redis(
-        host=CONFIG.output.host,
-        port=CONFIG.output.port,
+        host=CONFIG.redis.host,
+        port=CONFIG.redis.port,
     )
 
     # Start processing images
