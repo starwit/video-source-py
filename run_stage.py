@@ -7,7 +7,6 @@ from video_source_py.videosource import VideoSource
 if __name__ == '__main__':
 
     stop_event = threading.Event()
-    last_retrieved_id = None
 
     # Register signal handlers
     def sig_handler(signum, _):
