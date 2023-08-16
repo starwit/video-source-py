@@ -1,11 +1,10 @@
 [tool.poetry]
 name = "video-source-py"
-version = "0.1.0"
+version = "0.2.0"
 description = "A generic video source extracting frames from any source OpenCV / ffmpeg supports and pushing it towards a consumer"
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "GPL3"
 readme = "README.md"
-packages = [{include = "video_source_py"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
