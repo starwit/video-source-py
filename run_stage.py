@@ -33,4 +33,4 @@ if __name__ == '__main__':
     while not stop_event.is_set():
         image_proto = video_source.get()
         if image_proto is not None:
-            redis_conn.xadd(name=f'video_source_{CONFIG.id}', fields={'proto_data': image_proto}, maxlen=10)
+            redis_conn.xadd(name=f'videosource:{CONFIG.id}', fields={'proto_data': image_proto}, maxlen=10)
