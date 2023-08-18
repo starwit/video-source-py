@@ -4,6 +4,9 @@ import threading
 from video_source_py.config import VideoSourceConfig
 from video_source_py.videosource import VideoSource
 
+import logging
+logger = logging.getLogger(__name__)
+
 if __name__ == '__main__':
 
     stop_event = threading.Event()
@@ -19,6 +22,9 @@ if __name__ == '__main__':
 
     # Load config from settings.yaml / env vars
     CONFIG = VideoSourceConfig()
+    logger.setLevel(CONFIG.log_level.value)
+
+    logger.info(f'Starting video source (id={CONFIG.id},use_source_fps={CONFIG.use_source_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port})')
 
     # Init Videosource
     video_source = VideoSource(CONFIG)
