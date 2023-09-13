@@ -27,6 +27,8 @@ if __name__ == '__main__':
     CONFIG = VideoSourceConfig()
     logger.setLevel(CONFIG.log_level.value)
 
+    OUTPUT_STREAM_PREFIX = 'videosource'
+
     logger.info(f'Starting video source (id={CONFIG.id},use_source_fps={CONFIG.use_source_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port})')
 
     # Init Videosource
@@ -37,5 +39,5 @@ if __name__ == '__main__':
         while not stop_event.is_set():
             image_proto = video_source.get()
             if image_proto is not None:
-                publish(stream_key=CONFIG.id, proto_data=image_proto)
+                publish(stream_key=f'{OUTPUT_STREAM_PREFIX}:{CONFIG.id}', proto_data=image_proto)
 
