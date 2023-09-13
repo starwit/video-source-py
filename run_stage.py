@@ -1,10 +1,13 @@
+import logging
 import signal
-import redis
 import threading
+
+import redis
+from visionlib.pipeline.publisher import RedisPublisher
+
 from video_source_py.config import VideoSourceConfig
 from video_source_py.videosource import VideoSource
 
-import logging
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
@@ -29,14 +32,10 @@ if __name__ == '__main__':
     # Init Videosource
     video_source = VideoSource(CONFIG)
 
-    # Init output
-    redis_conn = redis.Redis(
-        host=CONFIG.redis.host,
-        port=CONFIG.redis.port,
-    )
+    with RedisPublisher(CONFIG.redis.host, CONFIG.redis.port) as publish:
+        # Start processing images
+        while not stop_event.is_set():
+            image_proto = video_source.get()
+            if image_proto is not None:
+                publish(stream_key=f'videosource:{CONFIG.id}', proto_data=image_proto)
 
-    # Start processing images
-    while not stop_event.is_set():
-        image_proto = video_source.get()
-        if image_proto is not None:
-            redis_conn.xadd(name=f'videosource:{CONFIG.id}', fields={'proto_data': image_proto}, maxlen=10)
