@@ -37,5 +37,5 @@ if __name__ == '__main__':
         while not stop_event.is_set():
             image_proto = video_source.get()
             if image_proto is not None:
-                publish(stream_key=f'videosource:{CONFIG.id}', proto_data=image_proto)
+                publish(stream_key=CONFIG.id, proto_data=image_proto)
 
