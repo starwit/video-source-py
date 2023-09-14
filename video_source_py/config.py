@@ -1,17 +1,24 @@
-from enum import Enum
+from pydantic import BaseModel, conint
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from visionlib.pipeline.settings import LogLevel, YamlConfigSettingsSource
 
-from pydantic import BaseModel
 
-class LogLevel(str, Enum):
-    CRITICAL = 'CRITICAL'
-    ERROR = 'ERROR'
-    WARNING = 'WARNING'
-    INFO = 'INFO'
-    DEBUG = 'DEBUG'
+class RedisConfig(BaseModel):
+    host: str = 'localhost'
+    port: conint(ge=1, le=65536) = 6379
+    output_stream_prefix: str = 'videosource'
 
-class VideoSourceConfig(BaseModel):
+
+class VideoSourceConfig(BaseSettings):
     id: str
     uri: str
     use_source_fps: bool = False
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
+    redis: RedisConfig = RedisConfig()
+
+    model_config = SettingsConfigDict(env_nested_delimiter='__')
+
+    @classmethod
+    def settings_customise_sources(cls, settings_cls, init_settings, env_settings, dotenv_settings, file_secret_settings):
+        return (init_settings, env_settings, YamlConfigSettingsSource(settings_cls), file_secret_settings)

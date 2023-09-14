@@ -7,7 +7,7 @@ from visionapi.messages_pb2 import Shape, VideoFrame
 
 from .config import VideoSourceConfig
 
-logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
+logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-10s %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -47,6 +47,7 @@ class VideoSource:
             if self.cap.isOpened():
                 self.source_fps = self.cap.get(cv2.CAP_PROP_FPS)
                 logger.info(f'Successfully established connection to {self.config.uri}')
+                logger.info(f'Detected source framerate: {self.source_fps:.3f} fps')
                 return True
             else:
                 logger.warn(f'Could not open source at {self.config.uri}')
