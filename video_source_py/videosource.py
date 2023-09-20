@@ -51,10 +51,10 @@ class VideoSource:
         return vf.SerializeToString()
     
     def _wait_next_frame(self):
-        if self.config.use_source_fps and self._source_fps is not None:
+        if self.config.max_fps is not None:
             current_time = time.time()
 
-            wait_target = self._last_frame_ts + 1/self._source_fps
+            wait_target = self._last_frame_ts + 1/self.config.max_fps
             time_to_sleep = wait_target - current_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)

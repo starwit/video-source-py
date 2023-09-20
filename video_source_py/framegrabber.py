@@ -1,7 +1,7 @@
 import logging
 import time
-from threading import Event, RLock, Thread
 from collections import deque
+from threading import Event, RLock, Thread
 
 import cv2
 

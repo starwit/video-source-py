@@ -1,7 +1,7 @@
 id: video1
 uri: /path/that/opencv/understands
-# This limits fps to the fps of the source (only really makes sense with video files, if a camera shall be simulated)
-use_source_fps: False
+# This sets a lower bound on frame times (i.e. frames are skipped)
+# max_fps: 1
 reconnect_backoff_time: 1
 log_level: DEBUG
 redis:

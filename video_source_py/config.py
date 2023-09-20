@@ -12,7 +12,7 @@ class RedisConfig(BaseModel):
 class VideoSourceConfig(BaseSettings):
     id: str
     uri: str
-    use_source_fps: bool = False
+    max_fps: conint(ge=1) = None
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
     redis: RedisConfig = RedisConfig()
