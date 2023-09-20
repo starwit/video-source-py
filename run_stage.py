@@ -26,7 +26,7 @@ if __name__ == '__main__':
     CONFIG = VideoSourceConfig()
     logger.setLevel(CONFIG.log_level.value)
 
-    logger.info(f'Starting video source (id={CONFIG.id},use_source_fps={CONFIG.use_source_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port})')
+    logger.info(f'Starting video source (id={CONFIG.id},max_fps={CONFIG.max_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port})')
 
     # Init Videosource
     video_source = VideoSource(CONFIG)

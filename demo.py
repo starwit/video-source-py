@@ -8,7 +8,7 @@ import time
 # VIDEO_URI = '/home/florian/workspaces/carmel/videos/MISOGuilfordCityCenterDr.mp4'
 VIDEO_URI = 'rtsp://localhost:8554/ondemand-1080'
 
-config = VideoSourceConfig(id='video1', uri=VIDEO_URI, use_source_fps=False, log_level='DEBUG')
+config = VideoSourceConfig(id='video1', uri=VIDEO_URI, log_level='DEBUG')
 
 source = VideoSource(config)
 
