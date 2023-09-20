@@ -3,11 +3,12 @@ import numpy as np
 from visionapi.messages_pb2 import VideoFrame
 import cv2
 from time import perf_counter
+import time
 
-# VIDEO_URI = '/home/florian/workspaces/carmel/videos/RangelineSMedicalDr.mp4'
-VIDEO_URI = '/home/florian/workspaces/carmel/videos/MISOGuilfordCityCenterDr.mp4'
+# VIDEO_URI = '/home/florian/workspaces/carmel/videos/MISOGuilfordCityCenterDr.mp4'
+VIDEO_URI = 'rtsp://localhost:8554/ondemand-1080'
 
-config = VideoSourceConfig(id='video1', uri=VIDEO_URI, use_source_fps=True, log_level='DEBUG')
+config = VideoSourceConfig(id='video1', uri=VIDEO_URI, use_source_fps=False, log_level='DEBUG')
 
 source = VideoSource(config)
 
@@ -18,7 +19,8 @@ while True:
     start = perf_counter()
     frame_raw = source.get()
     if frame_raw is None:
-        break
+        time.sleep(0.01)
+        continue
 
     frame_retrieval = perf_counter()
     vf = VideoFrame()

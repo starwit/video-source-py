@@ -38,3 +38,5 @@ if __name__ == '__main__':
             if image_proto is not None:
                 publish(stream_key=f'{CONFIG.redis.output_stream_prefix}:{CONFIG.id}', proto_data=image_proto)
 
+    video_source.close()
+
