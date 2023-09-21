@@ -6,10 +6,16 @@ root_logger = logging.getLogger()
 import time
 from typing import Any
 
+from prometheus_client import Counter, Histogram, Summary
 from visionapi.messages_pb2 import Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
+
+FRAME_COUNTER = Counter('video_source_frame_counter', 'The number of frames the video source has retrieved from the grabber')
+GET_DURATION = Histogram('video_source_get_duration', 'The time it takes from the call of get() until the proto object is returned',
+                            buckets=(0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.04, 0.05, 0.075, 0.1, 0.2))
+WAIT_NEXT_FRAME_DURATION = Summary('video_source_wait_next_frame_duration', 'The time the video source waits for the next frame in order to meet the fps target')
 
 
 class VideoSource:
@@ -24,6 +30,7 @@ class VideoSource:
     def __call__(self, *args, **kwargs) -> Any:
         return self.get()
 
+    @GET_DURATION.time()
     def get(self):
         self._source_fps = self._framegrabber.source_fps
         self._wait_next_frame()
@@ -31,6 +38,8 @@ class VideoSource:
         frame = self._framegrabber.get_frame()
         if frame is None:
             return None
+        
+        FRAME_COUNTER.inc()
 
         self._last_frame_ts = time.time()
         
@@ -50,6 +59,7 @@ class VideoSource:
 
         return vf.SerializeToString()
     
+    @WAIT_NEXT_FRAME_DURATION.time()
     def _wait_next_frame(self):
         if self.config.max_fps is not None:
             current_time = time.time()
