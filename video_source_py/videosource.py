@@ -61,7 +61,7 @@ class VideoSource:
     
     @WAIT_NEXT_FRAME_DURATION.time()
     def _wait_next_frame(self):
-        if self.config.max_fps is not None:
+        if self.config.max_fps > 0:
             current_time = time.time()
 
             wait_target = self._last_frame_ts + 1/self.config.max_fps
