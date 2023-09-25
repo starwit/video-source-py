@@ -37,6 +37,7 @@ class VideoSource:
 
         frame = self._framegrabber.get_frame()
         if frame is None:
+            time.sleep(0.1)
             return None
         
         FRAME_COUNTER.inc()

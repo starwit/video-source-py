@@ -23,6 +23,7 @@ class FrameGrabber(Thread):
         self._cap = None
         self._source_fps = None
         self._last_frame_ts = None
+        self._last_frame_ok = True
 
         self.start()
 
@@ -38,8 +39,8 @@ class FrameGrabber(Thread):
             FRAME_LOOP_DURATION.observe(time.time() - last_read_call_ts)
             last_read_call_ts = time.time()
             
-            frame_ok, frame = self._cap.read()
-            if not frame_ok:
+            self._last_frame_ok, frame = self._cap.read()
+            if not self._last_frame_ok:
                 continue
 
             FRAME_COUNTER.inc()
@@ -66,6 +67,12 @@ class FrameGrabber(Thread):
             self._cap.release()
             self._cap = None
             self._logger.warn(f'Source not available anymore at {self._uri}')
+            return False
+        
+        if not self._last_frame_ok:
+            self._cap.release()
+            self._cap = None
+            self._logger.warn(f'Last frame was not okay. Discarding active connection.')
             return False
         
         return True
