@@ -28,6 +28,10 @@ class VideoSource:
         self._source_fps = None
         self._last_frame_ts = 0
 
+        if config.jpeg_encode:
+            from turbojpeg import TurboJPEG
+            self._jpeg = TurboJPEG()
+
     def __call__(self, *args, **kwargs) -> Any:
         return self.get()
 
@@ -58,7 +62,10 @@ class VideoSource:
         shape = Shape()
         shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
         vf.shape.CopyFrom(shape)
-        vf.frame_data = frame.tobytes()
+        if self.config.jpeg_encode:
+            vf.frame_data_jpeg = self._jpeg.encode(frame, quality=80)
+        else:
+            vf.frame_data = frame.tobytes()
 
         return vf.SerializeToString()
     
