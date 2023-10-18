@@ -16,6 +16,7 @@ FRAME_COUNTER = Counter('video_source_frame_counter', 'The number of frames the 
 GET_DURATION = Histogram('video_source_get_duration', 'The time it takes from the call of get() until the proto object is returned',
                             buckets=(0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.04, 0.05, 0.075, 0.1, 0.2))
 WAIT_NEXT_FRAME_DURATION = Summary('video_source_wait_next_frame_duration', 'The time the video source waits for the next frame in order to meet the fps target')
+PROTO_SERIALIZATION_DURATION = Summary('video_source_proto_serialization_duration', 'The time it takes to create a serialized output proto')
 
 
 class VideoSource:
@@ -49,6 +50,7 @@ class VideoSource:
     def close(self):
         self._framegrabber.stop()
 
+    @PROTO_SERIALIZATION_DURATION.time()
     def _to_proto(self, frame):
         vf = VideoFrame()
         vf.source_id = self.config.id
