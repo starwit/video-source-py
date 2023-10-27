@@ -2,9 +2,12 @@ import logging
 import time
 from collections import deque
 from threading import Event, RLock, Thread
+from prometheus_client import Counter, Summary
 
 import cv2
 
+FRAME_COUNTER = Counter('frame_grabber_frame_counter', 'The number of frames that were retrieved from the video stream')
+FRAME_LOOP_DURATION = Summary('frame_grabber_loop_duration', 'The time between calls to VideoCapture.read()')
 
 class FrameGrabber(Thread):
     def __init__(self, uri: str, reconnect_backoff_time: float = 1.0) -> None:
@@ -20,19 +23,27 @@ class FrameGrabber(Thread):
         self._cap = None
         self._source_fps = None
         self._last_frame_ts = None
+        self._last_frame_ok = True
 
         self.start()
 
     # Always remember: This method is called from within the thread and must not be called outside
     def _main_loop(self):
+        last_read_call_ts = time.time()
+        
         while not self._stop_event.is_set():
             if not self._ensure_connection():
                 time.sleep(self._reconnect_backoff_time)
                 continue
+
+            FRAME_LOOP_DURATION.observe(time.time() - last_read_call_ts)
+            last_read_call_ts = time.time()
             
-            frame_ok, frame = self._cap.read()
-            if not frame_ok:
+            self._last_frame_ok, frame = self._cap.read()
+            if not self._last_frame_ok:
                 continue
+
+            FRAME_COUNTER.inc()
 
             self._frame_deque.append(frame)
         
@@ -56,6 +67,12 @@ class FrameGrabber(Thread):
             self._cap.release()
             self._cap = None
             self._logger.warn(f'Source not available anymore at {self._uri}')
+            return False
+        
+        if not self._last_frame_ok:
+            self._cap.release()
+            self._cap = None
+            self._logger.warn(f'Last frame was not okay. Discarding active connection.')
             return False
         
         return True

@@ -1,12 +1,15 @@
-from video_source_py.videosource import VideoSource, VideoSourceConfig
+import time
+from time import perf_counter
+
+import cv2
 import numpy as np
 from visionapi.messages_pb2 import VideoFrame
-import cv2
-from time import perf_counter
-import time
+from visionlib.pipeline.tools import get_raw_frame_data
+
+from video_source_py.videosource import VideoSource, VideoSourceConfig
 
 # VIDEO_URI = '/home/florian/workspaces/carmel/videos/MISOGuilfordCityCenterDr.mp4'
-VIDEO_URI = 'rtsp://localhost:8554/ondemand-1080'
+VIDEO_URI = 'rtsp://localhost:8554/ondemand-4k'
 
 config = VideoSourceConfig(id='video1', uri=VIDEO_URI, log_level='DEBUG')
 
@@ -26,7 +29,7 @@ while True:
     vf = VideoFrame()
     vf.ParseFromString(frame_raw)
 
-    frame = np.frombuffer(vf.frame_data, dtype=np.uint8).reshape((vf.shape.height, vf.shape.width, vf.shape.channels))
+    frame = get_raw_frame_data(vf)
     frame_decoding = perf_counter()
         
     cv2.imshow('default', frame)

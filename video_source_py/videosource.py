@@ -6,10 +6,17 @@ root_logger = logging.getLogger()
 import time
 from typing import Any
 
+from prometheus_client import Counter, Histogram, Summary
 from visionapi.messages_pb2 import Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
+
+FRAME_COUNTER = Counter('video_source_frame_counter', 'The number of frames the video source has retrieved from the grabber')
+GET_DURATION = Histogram('video_source_get_duration', 'The time it takes from the call of get() until the proto object is returned',
+                            buckets=(0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.04, 0.05, 0.075, 0.1, 0.2))
+WAIT_NEXT_FRAME_DURATION = Summary('video_source_wait_next_frame_duration', 'The time the video source waits for the next frame in order to meet the fps target')
+PROTO_SERIALIZATION_DURATION = Summary('video_source_proto_serialization_duration', 'The time it takes to create a serialized output proto')
 
 
 class VideoSource:
@@ -21,16 +28,24 @@ class VideoSource:
         self._source_fps = None
         self._last_frame_ts = 0
 
+        if config.jpeg_encode:
+            from turbojpeg import TurboJPEG
+            self._jpeg = TurboJPEG()
+
     def __call__(self, *args, **kwargs) -> Any:
         return self.get()
 
+    @GET_DURATION.time()
     def get(self):
         self._source_fps = self._framegrabber.source_fps
         self._wait_next_frame()
 
         frame = self._framegrabber.get_frame()
         if frame is None:
+            time.sleep(0.1)
             return None
+        
+        FRAME_COUNTER.inc()
 
         self._last_frame_ts = time.time()
         
@@ -39,6 +54,7 @@ class VideoSource:
     def close(self):
         self._framegrabber.stop()
 
+    @PROTO_SERIALIZATION_DURATION.time()
     def _to_proto(self, frame):
         vf = VideoFrame()
         vf.source_id = self.config.id
@@ -46,12 +62,16 @@ class VideoSource:
         shape = Shape()
         shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
         vf.shape.CopyFrom(shape)
-        vf.frame_data = frame.tobytes()
+        if self.config.jpeg_encode:
+            vf.frame_data_jpeg = self._jpeg.encode(frame, quality=80)
+        else:
+            vf.frame_data = frame.tobytes()
 
         return vf.SerializeToString()
     
+    @WAIT_NEXT_FRAME_DURATION.time()
     def _wait_next_frame(self):
-        if self.config.max_fps is not None:
+        if self.config.max_fps > 0:
             current_time = time.time()
 
             wait_target = self._last_frame_ts + 1/self.config.max_fps

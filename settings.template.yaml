@@ -1,7 +1,11 @@
+# The id is used as part of stream identifier in Redis
 id: video1
 uri: /path/that/opencv/understands
-# This sets a lower bound on frame times (i.e. frames are skipped)
-# max_fps: 1
+# This sets a lower bound on frame times (i.e. frames are skipped), 0 means no limit
+max_fps: 0
+# Encode the video frame data as JPEG (using libturbojpeg)
+jpeg_encode: True
+# How long to wait in seconds in case the connection is lost before the next retry
 reconnect_backoff_time: 1
 log_level: DEBUG
 redis:
