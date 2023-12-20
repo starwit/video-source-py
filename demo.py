@@ -8,7 +8,6 @@ from visionlib.pipeline.tools import get_raw_frame_data
 
 from video_source_py.videosource import VideoSource, VideoSourceConfig
 
-# VIDEO_URI = '/home/florian/workspaces/carmel/videos/MISOGuilfordCityCenterDr.mp4'
 VIDEO_URI = 'rtsp://localhost:8554/ondemand-4k'
 
 config = VideoSourceConfig(id='video1', uri=VIDEO_URI, log_level='DEBUG')

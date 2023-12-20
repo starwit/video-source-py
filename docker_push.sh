@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker push docker.internal.starwit-infra.de/sae/video-source-py:$(poetry version --short)
+docker push starwitorg/sae-video-source-py:$(poetry version --short)
