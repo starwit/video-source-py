@@ -1,6 +1,8 @@
 # Video Source (Python)
 **Do not use this component with a local video file! (see below)**
 
+This component is part of the Starwit Awareness Engine (SAE). See umbrella repo here: https://github.com/starwit/vision-pipeline-k8s
+
 ## How-To Setup
 - Make sure you have Poetry installed (otherwise head over to https://python-poetry.org/docs/#installing-with-the-official-installer)
 - Source the script `set_local_git_creds.sh` (and use a read-only token with minimal permissions)
