@@ -6,6 +6,7 @@ root_logger = logging.getLogger()
 import time
 from typing import Any
 
+import cv2
 from prometheus_client import Counter, Histogram, Summary
 from visionapi.messages_pb2 import Shape, VideoFrame
 
@@ -48,6 +49,8 @@ class VideoSource:
         FRAME_COUNTER.inc()
 
         self._last_frame_ts = time.time()
+
+        frame = self._resize(frame)
         
         return self._to_proto(frame)
 
@@ -78,3 +81,11 @@ class VideoSource:
             time_to_sleep = wait_target - current_time
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
+
+    def _resize(self, frame):
+        if self.config.scale_width > 0:
+            original_width = frame.shape[1]
+            scale_factor = self.config.scale_width / original_width
+            return cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
+        else:
+            return frame
