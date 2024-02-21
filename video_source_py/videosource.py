@@ -66,7 +66,7 @@ class VideoSource:
         shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
         vf.shape.CopyFrom(shape)
         if self.config.jpeg_encode:
-            vf.frame_data_jpeg = self._jpeg.encode(frame, quality=80)
+            vf.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
         else:
             vf.frame_data = frame.tobytes()
 

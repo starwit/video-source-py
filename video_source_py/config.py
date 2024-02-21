@@ -14,6 +14,7 @@ class VideoSourceConfig(BaseSettings):
     uri: str
     max_fps: conint(ge=0) = 0
     jpeg_encode: bool = True
+    jpeg_quality: conint(ge=0, le=100) = 80
     scale_width: conint(ge=0) = 0
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1

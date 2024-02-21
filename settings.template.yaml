@@ -5,6 +5,8 @@ uri: /path/that/opencv/understands
 max_fps: 0
 # Encode the video frame data as JPEG (using libturbojpeg)
 jpeg_encode: True
+# JPEG quality 0 - 100 (100 is lossless and big); Reasonable starting points: 2160 = 80, 1080 = 90, <720 = 95
+jpeg_quality: 80
 # If > 0, scale the image to the given width (preserving aspect ratio)
 scale_width: 0
 # How long to wait in seconds in case the connection is lost before the next retry
