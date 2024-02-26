@@ -1,13 +1,12 @@
 import logging
 import signal
 import threading
-import traceback
 
 from prometheus_client import Histogram, start_http_server
 from visionlib.pipeline.publisher import RedisPublisher
 
-from video_source_py.config import VideoSourceConfig
-from video_source_py.videosource import VideoSource
+from .config import VideoSourceConfig
+from .videosource import VideoSource
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ PROMETHEUS_METRICS_PORT = 8000
 REDIS_PUBLISH_DURATION = Histogram('video_source_redis_publish_duration', 'The time it takes to push a message onto the Redis stream',
                                    buckets=(0.0025, 0.005, 0.0075, 0.01, 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25))
 
-if __name__ == '__main__':
+def run_stage():
 
     stop_event = threading.Event()
 

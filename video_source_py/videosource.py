@@ -8,7 +8,7 @@ from typing import Any
 
 import cv2
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.messages_pb2 import Shape, VideoFrame
+from visionapi.messages_pb2 import SaeMessage, Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
@@ -59,18 +59,18 @@ class VideoSource:
 
     @PROTO_SERIALIZATION_DURATION.time()
     def _to_proto(self, frame):
-        vf = VideoFrame()
-        vf.source_id = self.config.id
-        vf.timestamp_utc_ms = time.time_ns() // 1_000_000
-        shape = Shape()
-        shape.height, shape.width, shape.channels = frame.shape[0], frame.shape[1], frame.shape[2]
-        vf.shape.CopyFrom(shape)
+        msg = SaeMessage()
+        msg.frame.source_id = self.config.id
+        msg.frame.timestamp_utc_ms = time.time_ns() // 1_000_000
+        msg.frame.shape.height = frame.shape[0]
+        msg.frame.shape.width = frame.shape[1]
+        msg.frame.shape.channels = frame.shape[2]
         if self.config.jpeg_encode:
-            vf.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
+            msg.frame.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
         else:
-            vf.frame_data = frame.tobytes()
+            msg.frame.frame_data = frame.tobytes()
 
-        return vf.SerializeToString()
+        return msg.SerializeToString()
     
     @WAIT_NEXT_FRAME_DURATION.time()
     def _wait_next_frame(self):
