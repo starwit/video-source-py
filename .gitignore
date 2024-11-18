@@ -4,3 +4,4 @@ __pycache__
 *.yaml
 !settings.template.yaml
 docker-compose.yml
+*.png

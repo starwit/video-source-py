@@ -1,21 +1,26 @@
-from pydantic import BaseModel, conint
+from pathlib import Path
+from typing import Optional
+
+from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Annotated
 from visionlib.pipeline.settings import LogLevel, YamlConfigSettingsSource
 
 
 class RedisConfig(BaseModel):
     host: str = 'localhost'
-    port: conint(ge=1, le=65536) = 6379
+    port: Annotated[int, Field(ge=1, le=65536)] = 6379
     output_stream_prefix: str = 'videosource'
 
 
 class VideoSourceConfig(BaseSettings):
     id: str
     uri: str
-    max_fps: conint(ge=0) = 0
+    max_fps: Annotated[int, Field(ge=0)] = 0
     jpeg_encode: bool = True
-    jpeg_quality: conint(ge=0, le=100) = 80
-    scale_width: conint(ge=0) = 0
+    jpeg_quality: Annotated[int, Field(ge=0, le=100)] = 80
+    scale_width: Annotated[int, Field(ge=0)] = 0
+    mask_path: Optional[Path] = None
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
     redis: RedisConfig = RedisConfig()

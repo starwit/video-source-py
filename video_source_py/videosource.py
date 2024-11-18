@@ -4,9 +4,11 @@ logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-10s %(message)s
 root_logger = logging.getLogger()
 
 import time
+from pathlib import Path
 from typing import Any
 
 import cv2
+import numpy as np
 from prometheus_client import Counter, Histogram, Summary
 from visionapi.messages_pb2 import SaeMessage, Shape, VideoFrame
 
@@ -25,13 +27,26 @@ class VideoSource:
         self.config = config
         root_logger.setLevel(self.config.log_level.value)
         self._logger = logging.getLogger(__name__)
-        self._framegrabber = FrameGrabber(self.config.uri)
         self._source_fps = None
         self._last_frame_ts = 0
+        self._mask = None
+        if self.config.mask_path is not None:
+            self._mask = self._load_mask(self.config.mask_path)
 
         if config.jpeg_encode:
             from turbojpeg import TurboJPEG
             self._jpeg = TurboJPEG()
+
+    def _load_mask(self, path: Path) -> np.ndarray:
+        if not path.is_file():
+            raise IOError(f'Could not open mask file at {path}')
+        mask_original = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+        mask = self._resize(mask_original, interpolation=cv2.INTER_NEAREST)
+        # Mask needs to be inverted, b/c of how cv2.subtract-based masking works
+        return 255 - mask
+    
+    def start(self):
+        self._framegrabber = FrameGrabber(self.config.uri)
 
     def __call__(self, *args, **kwargs) -> Any:
         return self.get()
@@ -51,6 +66,8 @@ class VideoSource:
         self._last_frame_ts = time.time()
 
         frame = self._resize(frame)
+
+        self._apply_mask(frame)
         
         return self._to_proto(frame)
 
@@ -82,10 +99,15 @@ class VideoSource:
             if time_to_sleep > 0:
                 time.sleep(time_to_sleep)
 
-    def _resize(self, frame):
+    def _resize(self, frame, interpolation=cv2.INTER_AREA):
         if self.config.scale_width > 0:
             original_width = frame.shape[1]
             scale_factor = self.config.scale_width / original_width
-            return cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
+            return cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=interpolation)
         else:
             return frame
+        
+    def _apply_mask(self, frame):
+        if self._mask is not None:
+            # This works by subtracting the pixel value from itself (i.e. setting it to 0) wherever the mask is not 0
+            cv2.subtract(src1=frame, src2=frame, dst=frame, mask=self._mask)

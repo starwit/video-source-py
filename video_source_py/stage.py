@@ -42,6 +42,8 @@ def run_stage():
     video_source = VideoSource(CONFIG)
 
     try:
+        video_source.start()
+
         with RedisPublisher(CONFIG.redis.host, CONFIG.redis.port) as publish:
             # Start processing images
             while not stop_event.is_set():
