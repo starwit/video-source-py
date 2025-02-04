@@ -4,7 +4,6 @@ version = "1.0.1"
 description = "A generic video source extracting frames from any source OpenCV / ffmpeg supports and pushing it towards a consumer"
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPL3"
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
