@@ -14,7 +14,7 @@ ENV PATH="${POETRY_HOME}/bin:${PATH}"
 COPY poetry.lock poetry.toml pyproject.toml /code/
 
 WORKDIR /code
-RUN poetry install
+RUN poetry install --no-root
     
 # Copy the rest of the project
 COPY . /code/

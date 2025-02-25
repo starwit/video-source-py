@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-10s %(message)s')
 root_logger = logging.getLogger()
@@ -28,6 +29,7 @@ class VideoSource:
         self._framegrabber = FrameGrabber(self.config.uri)
         self._source_fps = None
         self._last_frame_ts = 0
+        self.mask_img = self._load_mask(config.mask_polygon_location) if self.config.mask else None
 
         if config.jpeg_encode:
             from turbojpeg import TurboJPEG
@@ -45,6 +47,8 @@ class VideoSource:
         if frame is None:
             time.sleep(0.1)
             return None
+        if self.config.mask:
+            frame = self._apply_mask(frame)
         
         FRAME_COUNTER.inc()
 
@@ -89,3 +93,22 @@ class VideoSource:
             return cv2.resize(frame, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
         else:
             return frame
+        
+    def _load_mask(self, mask_polygon_location: str):
+        try:
+            points = []
+            with open(mask_polygon_location, "r") as f:
+                for line in f:
+                    x, y = map(int, line.strip().split())
+                    points.append((x, y))
+
+            mask_img = np.zeros((1440, 2560, 3), dtype=np.uint8)
+            if points:
+                cv2.fillPoly(mask_img, [np.array(points)], (255, 255, 255))
+            return mask_img
+        except Exception as e:
+            self._logger.error(f"Failed to load mask: {e}")
+            return None
+        
+    def _apply_mask(self, frame):
+        return cv2.bitwise_and(frame, self.mask_img)
