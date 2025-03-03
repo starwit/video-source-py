@@ -53,4 +53,3 @@ def run_stage():
         logger.error('Exception in main loop', exc_info=True)
     finally:
         video_source.close()
-
