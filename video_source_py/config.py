@@ -12,6 +12,8 @@ class RedisConfig(BaseModel):
 class VideoSourceConfig(BaseSettings):
     id: str
     uri: str
+    mask: bool
+    mask_polygon_location: str
     max_fps: conint(ge=0) = 0
     jpeg_encode: bool = True
     jpeg_quality: conint(ge=0, le=100) = 80

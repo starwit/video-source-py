@@ -25,10 +25,9 @@ WORKDIR /code
 # Copy dependency files first for caching
 COPY poetry.lock poetry.toml pyproject.toml /code/
 
-# Install dependencies
+WORKDIR /code
 RUN poetry install --no-root
-
-
+    
 # Copy the rest of the project
 COPY . /code/
 
