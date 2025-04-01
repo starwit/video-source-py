@@ -21,6 +21,7 @@ class VideoSourceConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
     redis: RedisConfig = RedisConfig()
+    start_time: str = None
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')
 

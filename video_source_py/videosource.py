@@ -9,7 +9,7 @@ from typing import Any
 
 import cv2
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.messages_pb2 import SaeMessage, Shape, VideoFrame
+from visionapi_yq.messages_pb2 import SaeMessage, Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
@@ -29,6 +29,7 @@ class VideoSource:
         self._framegrabber = FrameGrabber(self.config.uri)
         self._source_fps = None
         self._last_frame_ts = 0
+        self.frame_id = -1
         self.mask_img = self._load_mask(config.mask_polygon_location) if self.config.mask else None
 
         if config.jpeg_encode:
@@ -42,14 +43,16 @@ class VideoSource:
     def get(self):
         self._source_fps = self._framegrabber.source_fps
         self._wait_next_frame()
-
+        
         frame = self._framegrabber.get_frame()
         if frame is None:
             time.sleep(0.1)
             return None
+        
+        self.frame_id += 1
+
         if self.config.mask:
             frame = self._apply_mask(frame)
-        
         FRAME_COUNTER.inc()
 
         self._last_frame_ts = time.time()
@@ -69,6 +72,9 @@ class VideoSource:
         msg.frame.shape.height = frame.shape[0]
         msg.frame.shape.width = frame.shape[1]
         msg.frame.shape.channels = frame.shape[2]
+        msg.frame.frame_id = self.frame_id
+        print(f'frame_id: {self.frame_id}')
+
         if self.config.jpeg_encode:
             msg.frame.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
         else:

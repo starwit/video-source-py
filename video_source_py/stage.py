@@ -1,8 +1,9 @@
 import logging
 import signal
 import threading
+import time
 
-from prometheus_client import Histogram, start_http_server
+from prometheus_client import Counter, Histogram, start_http_server
 from visionlib.pipeline.publisher import RedisPublisher
 
 from .config import VideoSourceConfig
@@ -38,12 +39,20 @@ def run_stage():
 
     logger.info(f'Starting video source (id={CONFIG.id},max_fps={CONFIG.max_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port},scale_width={CONFIG.scale_width})')
 
-    # Init Videosource
+    # Sleep until the set start time
+    if CONFIG.start_time:
+        now = time.time()
+        start_time = time.mktime(time.strptime(CONFIG.start_time, '%Y-%m-%d %H:%M:%S'))
+        if now < start_time:
+            sleep_duration = start_time - now
+            logger.info(f'Sleeping for {sleep_duration} seconds until start time {CONFIG.start_time}')
+            stop_event.wait(timeout=sleep_duration)
+
+
     video_source = VideoSource(CONFIG)
 
     try:
         with RedisPublisher(CONFIG.redis.host, CONFIG.redis.port) as publish:
-            # Start processing images
             while not stop_event.is_set():
                 image_proto = video_source.get()
                 if image_proto is not None:
