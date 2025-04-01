@@ -48,7 +48,6 @@ def run_stage():
             logger.info(f'Sleeping for {sleep_duration} seconds until start time {CONFIG.start_time}')
             stop_event.wait(timeout=sleep_duration)
 
-
     video_source = VideoSource(CONFIG)
 
     try:

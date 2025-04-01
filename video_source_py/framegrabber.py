@@ -3,6 +3,7 @@ import time
 from collections import deque
 from threading import Event, RLock, Thread
 from prometheus_client import Counter, Summary
+from .framecounterthread import FrameCounterThread
 
 import cv2
 
@@ -24,8 +25,9 @@ class FrameGrabber(Thread):
         self._source_fps = None
         self._last_frame_ts = None
         self._last_frame_ok = True
-
+        self.frame_counter = FrameCounterThread()
         self.start()
+        self.frame_counter.start()
 
     # Always remember: This method is called from within the thread and must not be called outside
     def _main_loop(self):
@@ -92,3 +94,4 @@ class FrameGrabber(Thread):
     def stop(self):
         self._stop_event.set()
         self.join(10)
+        self.frame_counter.stop()

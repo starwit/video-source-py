@@ -29,7 +29,7 @@ class VideoSource:
         self._framegrabber = FrameGrabber(self.config.uri)
         self._source_fps = None
         self._last_frame_ts = 0
-        self.frame_id = -1
+        self.frame_id = 0
         self.mask_img = self._load_mask(config.mask_polygon_location) if self.config.mask else None
 
         if config.jpeg_encode:
@@ -49,8 +49,6 @@ class VideoSource:
             time.sleep(0.1)
             return None
         
-        self.frame_id += 1
-
         if self.config.mask:
             frame = self._apply_mask(frame)
         FRAME_COUNTER.inc()
@@ -72,8 +70,8 @@ class VideoSource:
         msg.frame.shape.height = frame.shape[0]
         msg.frame.shape.width = frame.shape[1]
         msg.frame.shape.channels = frame.shape[2]
-        msg.frame.frame_id = self.frame_id
-        print(f'frame_id: {self.frame_id}')
+        msg.frame.frame_id = self._framegrabber.frame_counter.get_counter()
+        # print(f'frame_id: {msg.frame.frame_id}')
 
         if self.config.jpeg_encode:
             msg.frame.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
