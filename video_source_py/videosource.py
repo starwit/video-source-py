@@ -26,7 +26,7 @@ class VideoSource:
         self.config = config
         root_logger.setLevel(self.config.log_level.value)
         self._logger = logging.getLogger(__name__)
-        self._framegrabber = FrameGrabber(self.config.uri)
+        self._framegrabber = FrameGrabber(config)
         self._source_fps = None
         self._last_frame_ts = 0
         self.frame_id = 0
@@ -70,8 +70,8 @@ class VideoSource:
         msg.frame.shape.height = frame.shape[0]
         msg.frame.shape.width = frame.shape[1]
         msg.frame.shape.channels = frame.shape[2]
-        msg.frame.frame_id = self._framegrabber.frame_counter.get_counter()
-        # print(f'frame_id: {msg.frame.frame_id}')
+        if self.config.thread_frame_count:
+            msg.frame.frame_id = self._framegrabber.frame_counter.get_counter()
 
         if self.config.jpeg_encode:
             msg.frame.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)

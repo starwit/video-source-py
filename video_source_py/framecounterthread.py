@@ -1,9 +1,10 @@
 import threading
 import time
 
-class FrameCounterThread:
-    def __init__(self):
+class FrameCounterThread():
+    def __init__(self,config):
         self.counter = 0
+        self.config = config
         self.counter_lock = threading.Lock()
         self.stopped = threading.Event()
         self.thread = threading.Thread(target=self._time_counter, daemon=True)
@@ -16,7 +17,7 @@ class FrameCounterThread:
     def _time_counter(self) -> None:
         """Increment the counter at a fixed interval."""
         while not self.stopped.is_set():
-            time.sleep(1 / 15)  # 15 FPS
+            time.sleep(1 / 15*self.config.thread_frame_ratio)  # 15 FPS
             with self.counter_lock:
                 self.counter += 1
 
