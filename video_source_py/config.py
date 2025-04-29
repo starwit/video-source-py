@@ -22,7 +22,9 @@ class VideoSourceConfig(BaseSettings):
     reconnect_backoff_time: float = 1
     start_time: str = None
     redis: RedisConfig = RedisConfig()
-
+    start_time: str = None
+    thread_frame_count: bool = False
+    thread_frame_ratio: float
     model_config = SettingsConfigDict(env_nested_delimiter='__')
 
     @classmethod

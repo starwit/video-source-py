@@ -1,8 +1,9 @@
 import logging
 import signal
 import threading
-import time 
-from prometheus_client import Histogram, start_http_server
+import time
+
+from prometheus_client import Counter, Histogram, start_http_server
 from visionlib.pipeline.publisher import RedisPublisher
 
 from .config import VideoSourceConfig
@@ -46,12 +47,11 @@ def run_stage():
             sleep_duration = start_time - now
             logger.info(f'Sleeping for {sleep_duration} seconds until start time {CONFIG.start_time}')
             stop_event.wait(timeout=sleep_duration)
-    # Init Videosource
+
     video_source = VideoSource(CONFIG)
 
     try:
         with RedisPublisher(CONFIG.redis.host, CONFIG.redis.port) as publish:
-            # Start processing images
             while not stop_event.is_set():
                 image_proto = video_source.get()
                 if image_proto is not None:
@@ -61,4 +61,3 @@ def run_stage():
         logger.error('Exception in main loop', exc_info=True)
     finally:
         video_source.close()
-

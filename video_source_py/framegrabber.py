@@ -3,6 +3,7 @@ import time
 from collections import deque
 from threading import Event, RLock, Thread
 from prometheus_client import Counter, Summary
+from .framecounterthread import FrameCounterThread
 
 import cv2
 
@@ -10,12 +11,12 @@ FRAME_COUNTER = Counter('frame_grabber_frame_counter', 'The number of frames tha
 FRAME_LOOP_DURATION = Summary('frame_grabber_loop_duration', 'The time between calls to VideoCapture.read()')
 
 class FrameGrabber(Thread):
-    def __init__(self, uri: str, reconnect_backoff_time: float = 1.0) -> None:
+    def __init__(self, config, reconnect_backoff_time: float = 1.0) -> None:
         super().__init__(name=__name__, target=self._main_loop)
         self._frame_deque = deque(maxlen=1)
         self._stop_event = Event()
 
-        self._uri = uri
+        self._uri = config.uri
         self._reconnect_backoff_time = reconnect_backoff_time
 
         self._logger = logging.getLogger(__name__)
@@ -24,8 +25,10 @@ class FrameGrabber(Thread):
         self._source_fps = None
         self._last_frame_ts = None
         self._last_frame_ok = True
-
+        self.frame_counter = FrameCounterThread(config)
         self.start()
+        if config.thread_frame_count:
+            self.frame_counter.start()
 
     # Always remember: This method is called from within the thread and must not be called outside
     def _main_loop(self):
@@ -92,3 +95,4 @@ class FrameGrabber(Thread):
     def stop(self):
         self._stop_event.set()
         self.join(10)
+        self.frame_counter.stop()
