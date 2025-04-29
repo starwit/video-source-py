@@ -20,6 +20,7 @@ class VideoSourceConfig(BaseSettings):
     scale_width: conint(ge=0) = 0
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
+    start_time: str = None
     redis: RedisConfig = RedisConfig()
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')

@@ -53,3 +53,5 @@ ENV PATH="/code/.venv/bin:$PATH"
 
 # Default command to run the application
 CMD [ "python", "main.py" ]
+
+# docker build -t mcvt_yq/video_source_py_arm64:v2.0 --platform linux/arm64 .
