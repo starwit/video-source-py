@@ -13,7 +13,7 @@ FRAME_LOOP_DURATION = Summary('frame_grabber_loop_duration', 'The time between c
 class FrameGrabber(Thread):
     def __init__(self, config, reconnect_backoff_time: float = 1.0) -> None:
         super().__init__(name=__name__, target=self._main_loop)
-        self._frame_deque = deque(maxlen=1)
+        self._frame_deque = deque(maxlen=3)
         self._stop_event = Event()
 
         self._uri = config.uri
