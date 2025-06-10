@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+
+# Install Python packages that aren't available via APT
+if [ "$1" = "configure" ]; then
+    echo "Installing Python dependencies"
+    pip3 install --upgrade pip
+    pip3 install pyturbojpeg
+    pip3 install git+https://github.com/starwit/vision-api.git@2.0.0#subdirectory=python/visionapi
+    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.0#subdirectory=python
+
+    echo "Create wrapper script"
+    mkdir -p /usr/local/bin
+    cat > /usr/local/bin/videosource <<EOF
+#!/bin/bash
+
+current_dir=$PWD
+cd /opt/starwit/videosource
+
+python3 main.py "\$@"
+cd $current_dir
+EOF
+    chmod +x /usr/local/bin/videosource    
+
+    echo "checking if config file exists"
+    cat /etc/starwit/videosource/settings.yaml
+    # link settings file from etc
+    cd /opt/starwit/videosource
+    ln -s /etc/starwit/videosource/settings.yaml settings.yaml
+
+    systemctl daemon-reload
+    systemctl start videosource.service        
+    systemctl enable videosource.service
+fi
+
+#DEBHELPER#
+
+exit 0

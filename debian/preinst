@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mkdir -p /etc/starwit/videosource
+mkdir -p /opt/starwit/videosource

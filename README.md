@@ -18,6 +18,10 @@ This component is part of the Starwit Awareness Engine (SAE). See umbrella repo 
 - Run `demo.py`
 - Press `q` (on display window) to exit
 
+## How to Build
+
+See [dev readme](DEV_READEME.md) for build instructions.
+
 ## Caveats
 ### Camera Simulation
 In earlier versions there used to be a `use_source_fps` config option that would limit the read (and thereby output) frame rate to the native frame rate of the source (which only made sense with a local video file). This could be used to simulate a camera.

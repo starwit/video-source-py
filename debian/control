@@ -1,0 +1,15 @@
+Source: video-source-py
+Section: python
+Priority: optional
+Maintainer: Markus Zarbock <kronprinzfriedrich@gmx.de>
+Build-Depends: debhelper (>= 11), dh-python, python3-all (>= 3.10), python3-setuptools, python3-pip
+Standards-Version: 4.1.3
+Homepage: https://starwit.de
+
+Package: video-source-py
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3 (>= 3.10), python3 (<< 3.13), python3-pydantic, python3-opencv, python3-redis, python3-prometheus-client, libturbojpeg, python3-pip, git, python3-venv
+XB-Python-Version: ${python:Versions}
+Description: Video Source component
+ Part of Starwit's Awareness Engine. This component takes care of 
+ reading frames from video sources.
