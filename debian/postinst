@@ -22,8 +22,6 @@ cd $current_dir
 EOF
     chmod +x /usr/local/bin/videosource    
 
-    echo "checking if config file exists"
-    cat /etc/starwit/videosource/settings.yaml
     # link settings file from etc
     cd /opt/starwit/videosource
     ln -s /etc/starwit/videosource/settings.yaml settings.yaml
