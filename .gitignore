@@ -6,4 +6,4 @@ __pycache__
 docker-compose.yml
 *.png
 target
-dist            
+dist
