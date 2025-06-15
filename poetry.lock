@@ -279,13 +279,13 @@ files = [
 
 [[package]]
 name = "pydantic"
-version = "2.11.5"
+version = "2.11.7"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pydantic-2.11.5-py3-none-any.whl", hash = "sha256:f9c26ba06f9747749ca1e5c94d6a85cb84254577553c8785576fd38fa64dc0f7"},
-    {file = "pydantic-2.11.5.tar.gz", hash = "sha256:7f853db3d0ce78ce8bbb148c401c2cdd6431b3473c0cdff2755c7690952a7b7a"},
+    {file = "pydantic-2.11.7-py3-none-any.whl", hash = "sha256:dde5df002701f6de26248661f6835bbe296a47bf73990135c7d07ce741b9623b"},
+    {file = "pydantic-2.11.7.tar.gz", hash = "sha256:d989c3c6cb79469287b1569f7447a17848c998458d49ebe294e975b9baf0f0db"},
 ]
 
 [package.dependencies]
@@ -584,7 +584,7 @@ typing-extensions = ">=4.12.0"
 
 [[package]]
 name = "visionapi"
-version = "2.0.0"
+version = "3.2.0"
 description = ""
 optional = false
 python-versions = "^3.10"
@@ -597,13 +597,13 @@ protobuf = "^4.23.0"
 [package.source]
 type = "git"
 url = "https://github.com/starwit/vision-api.git"
-reference = "2.0.0"
-resolved_reference = "7a84570c38242d59aa321dbbd951a345c07da145"
+reference = "3.2.0"
+resolved_reference = "cb43b088ceb93060822cb71f5f4b3c1888baddb2"
 subdirectory = "python/visionapi"
 
 [[package]]
 name = "visionlib"
-version = "0.11.0"
+version = "0.11.2"
 description = ""
 optional = false
 python-versions = "^3.10"
@@ -622,11 +622,11 @@ redis = "^5.0.0"
 [package.source]
 type = "git"
 url = "https://github.com/starwit/vision-lib.git"
-reference = "0.11.0"
-resolved_reference = "8188f063748ca724813a6f787c2a8d4454229162"
+reference = "0.11.2"
+resolved_reference = "7c55a34b24b20ed63c723b821e006260572b78d6"
 subdirectory = "python"
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ab91d96bef7782b60d45f73a624a38305fcbbaed84304eac4cba941fff2aee67"
+content-hash = "a287c777064bf53098aee5dc40f06749623a09c68f9010c18c5ee6edab71b2d6"

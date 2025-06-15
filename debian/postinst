@@ -6,8 +6,8 @@ if [ "$1" = "configure" ]; then
     echo "Installing Python dependencies"
     pip3 install --upgrade pip
     pip3 install pyturbojpeg
-    pip3 install git+https://github.com/starwit/vision-api.git@2.0.0#subdirectory=python/visionapi
-    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.0#subdirectory=python
+    pip3 install git+https://github.com/starwit/vision-api.git@3.2.0#subdirectory=python/visionapi
+    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.2#subdirectory=python
 
     echo "Create wrapper script"
     mkdir -p /usr/local/bin
