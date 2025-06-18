@@ -10,7 +10,7 @@ from typing import Any
 import cv2
 import numpy as np
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.messages_pb2 import SaeMessage, Shape, VideoFrame
+from visionapi.sae_pb2 import SaeMessage, Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber

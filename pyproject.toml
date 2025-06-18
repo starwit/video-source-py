@@ -1,17 +1,17 @@
 [tool.poetry]
 name = "video-source-py"
-version = "1.1.0"
+version = "1.2.0"
 description = "A generic video source extracting frames from any source OpenCV / ffmpeg supports and pushing it towards a consumer"
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPL3"
-readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2.0.0"
 opencv-python = "^4.7.0.72"
-visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "2.0.0" }
-visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = "python", tag = "0.11.0" }
+visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "3.2.0" }
+visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = "python", tag = "0.11.2" }
 redis = "^5.0.0"
 pydantic-settings = "^2.0.3"
 prometheus-client = "^0.17.1"

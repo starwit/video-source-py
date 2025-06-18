@@ -17,3 +17,5 @@ log_level: DEBUG
 redis:
   host: redis-host
   port: 6379
+
+prometheus_port: 8000

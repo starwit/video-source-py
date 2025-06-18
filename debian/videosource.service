@@ -1,0 +1,16 @@
+[Unit]
+Description=Video Source Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/starwit/videosource
+ExecStart=/usr/bin/python3 main.py
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=videosource
+
+[Install]
+WantedBy=multi-user.target
