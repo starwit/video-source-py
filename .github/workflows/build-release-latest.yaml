@@ -28,5 +28,5 @@ jobs:
       - name: create release
         run: |
          echo "Releasing package with version ${VERSION}"
-         gh --version
+         find ./target
          gh release create ${VERSION} ./target/*deb
