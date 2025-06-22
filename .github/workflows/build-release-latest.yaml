@@ -20,4 +20,6 @@ jobs:
         run: |
             export PATH=~/.local/bin/:$PATH
             cd /code
+            find .
+            poetry version
             make
