@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   pull_request:
 
+env:
+    GH_TOKEN: ${{ github.token }}   
+
 jobs:
   build:
     name: package APT
