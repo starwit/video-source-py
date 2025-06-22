@@ -1,4 +1,4 @@
-name: Build and publish latest APT package
+name: Build latest APT package
 
 on:
   workflow_dispatch:
@@ -20,6 +20,4 @@ jobs:
         run: |
             export PATH=/root/.local/bin/:$PATH
             cd /code
-            find .
-            poetry version
             make
