@@ -27,7 +27,6 @@ jobs:
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
       - name: create release
         run: |
-         apt install -y gh
          echo "Releasing package with version ${VERSION}"
          gh --version
          gh release create ${VERSION} ./target/*deb
