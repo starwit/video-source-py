@@ -1,0 +1,21 @@
+name: Build and publish latest APT package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: package APT
+    runs-on: [self-hosted, linux, X64]
+    container:
+        image: starwitorg/debian-packaging:0.0.1
+        volumes:
+            - ./:/code
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build package
+        run: |
+            cd /code
+            make

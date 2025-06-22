@@ -2,6 +2,7 @@
 __pycache__
 .vscode
 *.yaml
+!.github/workflows/*.yaml
 !settings.template.yaml
 docker-compose.yml
 *.png
