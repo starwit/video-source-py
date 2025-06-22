@@ -1,4 +1,4 @@
-name: Build latest APT package
+name: Build and release latest APT package
 
 on:
   workflow_dispatch:
@@ -21,3 +21,8 @@ jobs:
             export PATH=/root/.local/bin/:$PATH
             cd /code
             make
+      - name: create release
+        run: |
+         export VERSION=`poetry version -s`
+         echo "Releasing package with version ${VERSION}"
+
