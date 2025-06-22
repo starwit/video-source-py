@@ -2,6 +2,8 @@
 
 export PACKAGE_NAME=video-source-py
 
+default: build-deb
+
 install:
 	poetry install
 
