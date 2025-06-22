@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
 
-env:
-    GH_TOKEN: ${{ github.token }}   
-
 jobs:
   build:
     name: package APT
@@ -30,3 +27,5 @@ jobs:
          echo "Releasing package with version ${VERSION}"
          find ./target
          gh release create ${VERSION} ./target/*deb
+        env:
+          GH_TOKEN: ${{ github.token }}
