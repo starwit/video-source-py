@@ -25,6 +25,7 @@ jobs:
             cd /code
             echo "export GPG_KEY=${GPG_KEY}" > env.sh
             echo "export PASSPHRASE=${GPG_KEY}" >> env.sh
+            find .
             source ./env.sh
             cat env.sh
             make
