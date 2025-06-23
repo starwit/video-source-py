@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v4
       - name: build package
         run: |
+            export PATH=/root/.local/bin/:$PATH
             bash -c ./start_make.sh
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
 

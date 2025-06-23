@@ -34,6 +34,7 @@ exec gpg \
 EOF
 
 chmod u+x gpg-loopback.sh
+export DEBSIGN_PROGRAM="gpg-loopback.sh"
 export GPG="gpg-loopback.sh"
 
 #poetry lock
