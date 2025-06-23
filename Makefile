@@ -11,13 +11,19 @@ check-settings:
 	./check_settings.sh
 
 build-deb: check-settings
-	$(shell echo ${GPG_KEY} | base64 --decode | gpg --batch --import)
-	$(eval KEYID := $(shell gpg --list-keys --with-colons | grep pub | cut -d: -f5))
-	@echo "Signing with key id: $(KEYID)"
+	#$(shell echo ${GPG_KEY} | base64 --decode | gpg --batch --import)
+	#$(eval KEYID := $(shell gpg --list-keys --with-colons | grep pub | cut -d: -f5))
+	#@echo "Signing with key id: $(KEYID)"
 
 	poetry lock
 	poetry build
-	PASSPHRASE=${PASSPHRASE} dpkg-buildpackage -k$(KEYID)
+	#PASSPHRASE=${PASSPHRASE} dpkg-buildpackage -k$(KEYID) 
+	dpkg-buildpackage -us -uc
+
+	gpg --batch --yes --pinentry-mode loopback \
+		--passphrase "$GPG_PASS" \
+		--detach-sign -a ../your_package.changes
+
 	mkdir -p target
 	mv ../${PACKAGE_NAME}_* target/
 
