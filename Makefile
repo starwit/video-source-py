@@ -18,7 +18,7 @@ build-deb: check-settings
 	poetry lock
 	poetry build
 	dpkg-buildpackage --no-sign
-	echo "${PASSPHRASE}" | debsign -k$(KEYID) -p"gpg --batch --pinentry-mode loopback --passphrase-fd 0" ../${PACKAGE_NAME}_*.changes
+	$(shell echo "${PASSPHRASE}" | debsign -k$(KEYID) -p"gpg --batch --pinentry-mode loopback --passphrase-fd 0" ../${PACKAGE_NAME}_*.changes)
 
 	mkdir -p target
 	mv ../${PACKAGE_NAME}_* target/
