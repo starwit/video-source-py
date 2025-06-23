@@ -23,6 +23,7 @@ jobs:
         run: |
             export PATH=/root/.local/bin/:$PATH
             cd /code
+            echo Signing with KEY: $GPG_KEY
             make
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
       - name: create release
