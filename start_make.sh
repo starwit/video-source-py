@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PACKAGE_NAME=video-source-py
+
 export PATH=/root/.local/bin/:$PATH
 cd /code
 echo "export GPG_KEY=${GPG_KEY}" > env.sh
@@ -34,14 +36,15 @@ EOF
 chmod u+x gpg-loopback.sh
 export GPG="gpg-loopback.sh"
 
-poetry lock
-poetry build
+#poetry lock
+#poetry build
 
 dpkg-buildpackage -us -uc
+mkdir -p target
+mv ../${PACKAGE_NAME}_* target/
 
 gpg --batch --yes --pinentry-mode loopback \
     --passphrase "$GPG_PASS" \
-    --detach-sign -a ../video-source-py_1.2.0_amd64.changes
+    --detach-sign -a target/video-source-py_1.2.0_amd64.changes
 
-mkdir -p target
-mv ../${PACKAGE_NAME}_* target/
+
