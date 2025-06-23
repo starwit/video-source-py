@@ -25,9 +25,9 @@ jobs:
             cd /code
             echo "export GPG_KEY=${GPG_KEY}" > env.sh
             echo "export PASSPHRASE=${GPG_KEY}" >> env.sh
-            find .
-            source ./env.sh
             cat env.sh
+            source --help
+            source ./env.sh
             make
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
         env:
