@@ -40,13 +40,8 @@ export GPG="gpg-loopback.sh"
 #poetry build
 
 ./check_settings.sh
-dpkg-buildpackage -us -uc
+dpkg-buildpackage -k$DEBSIGN_KEYID -S
 mkdir -p target
 mv ../${PACKAGE_NAME}_* target/
-find .
-
-gpg --batch --yes --pinentry-mode loopback \
-    --passphrase "$GPG_PASS" \
-    --detach-sign -a target/video-source-py_1.2.0_amd64.changes
 
 
