@@ -32,6 +32,6 @@ jobs:
         run: |
          echo "Releasing package with version ${VERSION}"
          find ./target
-         gh release create ${VERSION} ./target/*deb
+         gh release create ${VERSION} ./target/*deb ./target/*.dsc
         env:
           GH_TOKEN: ${{ github.token }}
