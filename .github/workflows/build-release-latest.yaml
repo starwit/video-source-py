@@ -14,8 +14,8 @@ jobs:
     container:
         image: starwitorg/debian-packaging:0.0.1
         env:
-          PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-          GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}          
+          PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD_FLAT }}
+          GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY_B64 }}          
         volumes:
             - ./:/code
 
@@ -25,7 +25,7 @@ jobs:
       - name: build package
         run: |
             cd /code
-            ./start_make.sh
+            bash -c ./start_make.sh
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
 
       - name: create release
