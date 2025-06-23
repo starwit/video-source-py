@@ -39,9 +39,11 @@ export GPG="gpg-loopback.sh"
 #poetry lock
 #poetry build
 
+./check_settings.sh
 dpkg-buildpackage -us -uc
 mkdir -p target
 mv ../${PACKAGE_NAME}_* target/
+find .
 
 gpg --batch --yes --pinentry-mode loopback \
     --passphrase "$GPG_PASS" \
