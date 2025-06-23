@@ -24,6 +24,9 @@ jobs:
         uses: actions/checkout@v4
       - name: build package
         run: |
+            mkdir ~/.gnupg
+            echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+            echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
             cd /code
             bash -c ./start_make.sh
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV

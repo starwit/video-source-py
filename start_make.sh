@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GPG_TTY=$(tty)
+#export GPG_TTY=$(tty)
 
 echo $0
 export PATH=/root/.local/bin/:$PATH
