@@ -1,7 +1,6 @@
 .PHONY: install build-deb clean
 
 export PACKAGE_NAME=video-source-py
-export key=${GPG_KEY}
 
 default: build-deb
 
@@ -12,7 +11,6 @@ check-settings:
 	./check_settings.sh
 
 build-deb: check-settings
-	@echo $(key)
 	$(shell echo ${GPG_KEY} | base64 --decode | gpg --batch --import)
 	$(eval KEYID := $(shell gpg --list-keys --with-colons | grep pub | cut -d: -f5))
 	@echo "Signing with key id: $(KEYID)"
