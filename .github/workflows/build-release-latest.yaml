@@ -26,13 +26,13 @@ jobs:
             echo Signing with KEY: $GPG_KEY
             make
             echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
+        env:
+          PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
       - name: create release
         run: |
          echo "Releasing package with version ${VERSION}"
-         echo ""
          find ./target
          gh release create ${VERSION} ./target/*deb
         env:
           GH_TOKEN: ${{ github.token }}
-          PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-          GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
