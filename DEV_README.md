@@ -28,12 +28,13 @@ make build-deb
 
 If you don't want to install all pre-requisites to your machine, you can use APT build container:
 ```
-docker run -it --rm -v ./:/code  starwitorg/debian-packaging:latest bash -l -c "export PATH=~/.local/bin/:$PATH; cd /code; make"
+docker run -it --rm -v ./:/code  starwitorg/debian-packaging:0.0.2 bash -l -c "export PATH=~/.local/bin/:$PATH; cd /code; make"
 ```
 
 Package can be found in folder _target_. You can test install package using Docker like so:
 ```bash
 docker run -it --rm -v ./:/app  ubuntu:22.04 bash
+# Run in container
 apt update && apt install -y /app/target/video-source-py_0.1.0_all.deb
 ```
 
