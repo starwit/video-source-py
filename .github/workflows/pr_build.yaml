@@ -30,5 +30,4 @@ jobs:
       - name: test poetry builds
         run: |
             export PATH=/root/.local/bin/:$PATH
-            poetry lock
             poetry install

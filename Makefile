@@ -15,7 +15,6 @@ build-deb: check-settings
 	$(eval KEYID := $(shell gpg --list-keys --with-colons | grep pub | cut -d: -f5))
 	@echo "Signing with key id: $(KEYID)"
 
-	poetry lock
 	poetry build
 	dpkg-buildpackage --no-sign
 	$(shell echo "${PASSPHRASE}" | debsign -k$(KEYID) -p"gpg --batch --pinentry-mode loopback --passphrase-fd 0" ../${PACKAGE_NAME}_*.changes)
