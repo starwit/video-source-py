@@ -24,9 +24,9 @@ jobs:
         uses: actions/checkout@v4
       - name: build apt package
         run: |
-            export PATH=/root/.local/bin/:$PATH
-            bash -c ./start_make.sh
-            echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
+          echo "Build APT package"
+          bash -c "export PATH=/root/.local/bin/:$PATH; poetry self add poetry-plugin-export; make build-deb"
+          echo "Finish building APT package"
       - name: test poetry builds
         run: |
             export PATH=/root/.local/bin/:$PATH
