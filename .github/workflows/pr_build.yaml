@@ -31,7 +31,7 @@ jobs:
       - name: Install project
         run: |
           poetry config cache-dir /root/.cache/pypoetry
-          bash -c "make install"
+          bash -c "make test"
 
   apt-build:
     name: package APT
