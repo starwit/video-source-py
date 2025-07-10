@@ -1,4 +1,4 @@
-name: Create Release for APT package and docker
+name: Create Release
 
 on:
   workflow_dispatch:
