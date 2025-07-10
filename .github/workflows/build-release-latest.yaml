@@ -50,7 +50,7 @@ jobs:
         run: |
           git config --global user.email "code@starwit.de"
           git config --global user.name "Starwit"
-          git remote set-url --push origin https://Starwit:$GITHUB_TOKEN@github.com/starwit/detection-aggregator.git
+          git remote set-url --push origin https://Starwit:$GITHUB_TOKEN@github.com/starwit/video-source-py.git
           git add .
           modifications=$(git status | grep "modified" || true)
           if [ ! -z "$modifications" ]
