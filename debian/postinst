@@ -3,11 +3,12 @@ set -e
 
 # Install Python packages that aren't available via APT
 if [ "$1" = "configure" ]; then
-    echo "Installing Python dependencies"
-    pip3 install --upgrade pip
-    pip3 install pyturbojpeg
-    pip3 install git+https://github.com/starwit/vision-api.git@3.2.0#subdirectory=python/visionapi
-    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.2#subdirectory=python
+
+    echo "Create virtual environment for application"
+    cd "/opt/starwit/videosource"
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt 
 
     echo "Create wrapper script"
     mkdir -p /usr/local/bin
@@ -16,6 +17,7 @@ if [ "$1" = "configure" ]; then
 
 current_dir=$PWD
 cd /opt/starwit/videosource
+source .venv/bin/activate
 
 python3 main.py "\$@"
 cd $current_dir

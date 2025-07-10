@@ -2,35 +2,75 @@ name: Build and release latest APT package
 
 on:
   workflow_dispatch:
+    inputs:
+      versionChoice:
+        type: choice
+        required: true
+        description: Version Change
+        options:
+        - patch
+        - minor
+        - major
 
 permissions:
   contents: write
+
+env:
+  IMAGE_NAME: sae-video-source-py
+  DOCKERHUB_USERNAME: starwit
+  DOCKERHUB_ORG: starwitorg 
 
 jobs:
   build:
     name: package APT
     runs-on: [self-hosted, linux, X64]
     container:
-        image: starwitorg/debian-packaging:0.0.2
-        env:
-          PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD_FLAT }}
-          GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY_B64 }}          
-        volumes:
-            - ./:/code
+      image: starwitorg/debian-packaging:0.0.2
+      volumes:
+        - /home/githubrunner/.cache/pypoetry:/root/.cache/pypoetry
+      env:
+        PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD_FLAT }}
+        GPG_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY_B64 }}
 
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: build package
+
+      - name: Install GH CLI
+        uses: dev-hanz-ops/install-gh-cli-action@v0.2.1          
+
+      - name: create new version in pyproject.toml
         run: |
-            export PATH=/root/.local/bin/:$PATH
-            bash -c ./start_make.sh
-            echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
+          export PATH=/root/.local/bin/:$PATH
+          poetry version $VERSION
+        env:
+          VERSION: ${{ inputs.versionChoice }}
+
+      - name: commit new version
+        run: |
+          git config --global user.email "code@starwit.de"
+          git config --global user.name "Starwit"
+          git remote set-url --push origin https://Starwit:$GITHUB_TOKEN@github.com/starwit/detection-aggregator.git
+          git add .
+          modifications=$(git status | grep "modified" || true)
+          if [ ! -z "$modifications" ]
+          then
+            echo "modifications found: $modifications"
+            git commit -m "modified project version" ./pyproject.toml
+            git push
+          fi 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build APT package
+        run: |
+          echo "Build APT package"
+          bash -c "export PATH=/root/.local/bin/:$PATH; poetry self add poetry-plugin-export; make build-deb"
+          echo "Finish building APT package"
 
       - name: create release
         run: |
-         echo "Releasing package with version ${VERSION}"
-         find ./target
-         gh release create ${VERSION} ./target/*deb ./target/*.dsc
+          APP_VERSION=$(cat pyproject.toml | grep "version" | cut -d'=' -f2 | xargs echo -n) 
+          gh release create $APP_VERSION -F README.md --title "${APP_VERSION}" --target $(git branch --show-current) ./target/*deb ./target/*.dsc
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
