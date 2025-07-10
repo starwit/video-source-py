@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "video-source-py"
-version = "1.2.1"
+version = "1.2.2"
 description = "A generic video source extracting frames from any source OpenCV / ffmpeg supports and pushing it towards a consumer"
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPL3"
