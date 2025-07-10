@@ -1,4 +1,4 @@
-video-source-py (1.2.0) unstable; urgency=medium
+video-source-py (###RELEASE_VERSION###) unstable; urgency=medium
 
   * Sign debian package.
   * Stream lined dependencies.

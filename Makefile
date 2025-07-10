@@ -14,6 +14,7 @@ set-version:
 	$(eval VERSION := $(shell poetry version -s))
 	@echo $(VERSION)
 	sed -i -e "s/###RELEASE_VERSION###/$(VERSION)/" debian/changelog
+	echo debian/changelog
 
 build-deb: check-settings set-version
 
