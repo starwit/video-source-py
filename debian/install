@@ -1,4 +1,7 @@
 settings.yaml /etc/starwit/videosource
 main.py /opt/starwit/videosource
 
+requirements.txt /opt/starwit/videosource
+video_source_py /opt/starwit/videosource
+
 debian/videosource.service /usr/lib/systemd/system/
