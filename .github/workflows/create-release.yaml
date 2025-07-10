@@ -1,4 +1,4 @@
-name: Build and release latest APT package
+name: Create Release for APT package and docker
 
 on:
   workflow_dispatch:
