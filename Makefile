@@ -4,8 +4,11 @@ export PACKAGE_NAME=video-source-py
 
 default: build-deb
 
-install:
+install: check-settings
 	poetry install
+
+test: install
+	poetry run pytest
 
 check-settings:
 	./check_settings.sh
