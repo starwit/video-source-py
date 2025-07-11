@@ -1,10 +1,10 @@
 [tool.poetry]
+package-mode = false
 name = "video-source-py"
-version = "1.2.3"
+version = "1.2.5"
 description = "A generic video source extracting frames from any source OpenCV / ffmpeg supports and pushing it towards a consumer"
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPL3"
-package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -16,8 +16,9 @@ redis = "^5.0.0"
 pydantic-settings = "^2.0.3"
 prometheus-client = "^0.17.1"
 pyturbojpeg = "^1.7.2"
-
+pytest = "8.4.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
