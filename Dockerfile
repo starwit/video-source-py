@@ -1,9 +1,6 @@
-FROM python:3.12-slim as build
+FROM starwitorg/base-python-image:0.0.15 AS build
 
-RUN apt update && apt install --no-install-recommends -y \
-    curl \
-    git \
-    build-essential
+RUN apt update && apt install --no-install-recommends -y
 
 ARG POETRY_VERSION
 ENV POETRY_HOME=/opt/poetry
