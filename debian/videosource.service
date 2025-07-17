@@ -8,9 +8,6 @@ WorkingDirectory=/opt/starwit/videosource
 ExecStart=/usr/local/bin/videosource
 Restart=always
 RestartSec=5
-StandardOutput=journal+console
-StandardError=journal+console
-SyslogIdentifier=videosource
 
 [Install]
 WantedBy=multi-user.target
