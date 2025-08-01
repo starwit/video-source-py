@@ -25,6 +25,7 @@ class VideoSourceConfig(BaseSettings):
     reconnect_backoff_time: float = 1
     redis: RedisConfig = RedisConfig()
     max_position_delay: int = 1500
+    add_position_to_frame: bool = True
     skip_frames_if_no_position: bool = False
     prometheus_port: Annotated[int, Field(gt=1024, le=65536)] = 8000
 

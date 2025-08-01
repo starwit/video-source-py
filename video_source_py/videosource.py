@@ -97,15 +97,16 @@ class VideoSource:
         else:
             msg.frame.frame_data = frame.tobytes()
         
-        position = self._get_location(msg.frame)
-        if position is not None:
-            msg.frame.camera_location.CopyFrom(position)
-        else:
-            if self.config.skip_frames_if_no_position:
-                root_logger.debug('no position data - forwarding detections without position')
+        if self.config.add_position_to_frame:        
+            position = self._get_location(msg.frame)
+            if position is not None:
+                msg.frame.camera_location.CopyFrom(position)
             else:
-                root_logger.error('no position data - not processing Detections')
-                return None
+                if self.config.skip_frames_if_no_position:
+                    root_logger.debug('no position data - forwarding detections without position')
+                else:
+                    root_logger.error('no position data - not processing Detections')
+                    return None
 
         return msg.SerializeToString()
     
