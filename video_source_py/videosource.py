@@ -1,16 +1,19 @@
 import logging
 
-logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-10s %(message)s')
-root_logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
+root_logger = logging.getLogger(__name__)
 
 import time
 from pathlib import Path
 from typing import Any
 
+import redis
+import pybase64
 import cv2
 import numpy as np
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.sae_pb2 import SaeMessage, Shape, VideoFrame
+from visionapi.sae_pb2 import SaeMessage, Shape, VideoFrame, PositionMessage
+from visionapi.common_pb2 import GeoCoordinate
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
@@ -36,6 +39,8 @@ class VideoSource:
         if config.jpeg_encode:
             from turbojpeg import TurboJPEG
             self._jpeg = TurboJPEG()
+        
+        self._redis_client = redis.Redis(config.redis.host, config.redis.port)
 
     def _load_mask(self, path: Path) -> np.ndarray:
         if not path.is_file():
@@ -69,7 +74,12 @@ class VideoSource:
 
         self._apply_mask(frame)
         
-        return self._to_proto(frame)
+        frame = self._to_proto(frame)
+        
+        if frame is None:
+            return None # skip frame       
+        
+        return frame
 
     def close(self):
         self._framegrabber.stop()
@@ -86,6 +96,16 @@ class VideoSource:
             msg.frame.frame_data_jpeg = self._jpeg.encode(frame, quality=self.config.jpeg_quality)
         else:
             msg.frame.frame_data = frame.tobytes()
+        
+        position = self._get_location(msg.frame)
+        if position is not None:
+            msg.frame.camera_location.CopyFrom(position)
+        else:
+            if self.config.skip_frames_if_no_position:
+                root_logger.debug('no position data - forwarding detections without position')
+            else:
+                root_logger.error('no position data - not processing Detections')
+                return None
 
         return msg.SerializeToString()
     
@@ -111,3 +131,20 @@ class VideoSource:
         if self._mask is not None:
             # This works by subtracting the pixel value from itself (i.e. setting it to 0) wherever the mask is not 0
             cv2.subtract(src1=frame, src2=frame, dst=frame, mask=self._mask)
+            
+    def _get_location(self, frame) -> VideoFrame:
+        # read position data and parse it into PositionMessage
+        streamPositionMessage = self._redis_client.xrevrange('positionsource:self', count=1)
+        decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
+        positionMessage = PositionMessage()
+        positionMessage.ParseFromString(decodedPositionMessage)
+        if positionMessage.fix == False:
+            root_logger.debug('no position fix')
+            return None
+        if abs(positionMessage.timestamp_utc_ms - frame.timestamp_utc_ms) > self.config.max_position_delay:
+            root_logger.debug('position data and frame timestamp differ more than ' + str(self.config.max_position_delay))
+            return None
+        result = GeoCoordinate()
+        result.latitude = positionMessage.geo_coordinate.latitude
+        result.longitude = positionMessage.geo_coordinate.longitude
+        return result

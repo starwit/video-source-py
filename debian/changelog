@@ -1,5 +1,11 @@
 video-source-py (###RELEASE_VERSION###) unstable; urgency=medium
 
+  * add position to VideoFraem object.
+
+ -- Markus Zarbock <foss@starwit.de>  Fri, 01 Aug 2025 12:00:00 +0000
+
+video-source-py (1.2.5) unstable; urgency=medium
+
   * Sign debian package.
   * Stream lined dependencies.
 

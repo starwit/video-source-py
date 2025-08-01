@@ -13,9 +13,14 @@ scale_width: 0
 mask_path: null
 # How long to wait in seconds in case the connection is lost before the next retry
 reconnect_backoff_time: 1
+# max delay in ms between frame time and position update time
+max_position_delay: 1000
+# if true, frames will be forwarded without position
+skip_frames_if_no_position: False
+
 log_level: DEBUG
 redis:
-  host: redis-host
+  host: redis
   port: 6379
 
 prometheus_port: 8000
