@@ -128,7 +128,7 @@ class VideoSource:
             # This works by subtracting the pixel value from itself (i.e. setting it to 0) wherever the mask is not 0
             cv2.subtract(src1=frame, src2=frame, dst=frame, mask=self._mask)
             
-    def _get_location(self, frame) -> VideoFrame:
+    def _get_location(self, frame) -> GeoCoordinate:
         streamPositionMessage = self._redis_client.xrevrange('positionsource:self', count=1)
         positionMessage = PositionMessage()
         if len(streamPositionMessage) > 0:
