@@ -13,6 +13,7 @@ class RedisConfig(BaseModel):
     output_stream_prefix: str = 'videosource'
 
 class PositionConfiguration(BaseModel):
+    topic_name: str = "positionsource:self"
     max_position_skew: int = 1500
     add_position_to_frame: bool = True
     drop_frames_if_no_position: bool = False    

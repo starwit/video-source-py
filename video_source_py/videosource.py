@@ -129,7 +129,7 @@ class VideoSource:
             cv2.subtract(src1=frame, src2=frame, dst=frame, mask=self._mask)
             
     def _get_location(self, frame) -> GeoCoordinate:
-        streamPositionMessage = self._redis_client.xrevrange('positionsource:self', count=1)
+        streamPositionMessage = self._redis_client.xrevrange(self.config.position_configuration.topic_name, count=1)
         positionMessage = PositionMessage()
         if len(streamPositionMessage) > 0:
             decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
