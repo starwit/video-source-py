@@ -74,12 +74,7 @@ class VideoSource:
 
         self._apply_mask(frame)
         
-        frame = self._to_proto(frame)
-        
-        if frame is None:
-            return None # skip frame       
-        
-        return frame
+        return self._to_proto(frame)
 
     def close(self):
         self._framegrabber.stop()
@@ -97,12 +92,12 @@ class VideoSource:
         else:
             msg.frame.frame_data = frame.tobytes()
         
-        if self.config.add_position_to_frame:        
+        if self.config.position_configuration.add_position_to_frame:        
             position = self._get_location(msg.frame)
             if position is not None:
                 msg.frame.camera_location.CopyFrom(position)
             else:
-                if self.config.skip_frames_if_no_position:
+                if not self.config.position_configuration.drop_frames_if_no_position:
                     root_logger.debug('no position data - forwarding detections without position')
                 else:
                     root_logger.error('no position data - not processing Detections')
@@ -136,16 +131,22 @@ class VideoSource:
     def _get_location(self, frame) -> VideoFrame:
         # read position data and parse it into PositionMessage
         streamPositionMessage = self._redis_client.xrevrange('positionsource:self', count=1)
-        decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
         positionMessage = PositionMessage()
-        positionMessage.ParseFromString(decodedPositionMessage)
+        if len(streamPositionMessage) > 0:
+            decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
+            positionMessage.ParseFromString(decodedPositionMessage)
+        else:
+            root_logger.warning("Couldn't decode PositionMessage")
+            positionMessage.fix = False
+        
         if positionMessage.fix == False:
             root_logger.debug('no position fix')
             return None
-        if abs(positionMessage.timestamp_utc_ms - frame.timestamp_utc_ms) > self.config.max_position_delay:
-            root_logger.debug('position data and frame timestamp differ more than ' + str(self.config.max_position_delay))
+        if abs(positionMessage.timestamp_utc_ms - frame.timestamp_utc_ms) > self.config.position_configuration.max_position_skew:
+            root_logger.debug('position data and frame timestamp differ more than ' + str(self.config.position_configuration.max_position_skew))
             return None
         result = GeoCoordinate()
         result.latitude = positionMessage.geo_coordinate.latitude
         result.longitude = positionMessage.geo_coordinate.longitude
+        root_logger.debug(f"Add position {result}")
         return result

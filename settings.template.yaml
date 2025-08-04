@@ -19,7 +19,7 @@ max_position_delay: 1000
 # if true, video source tries to read from position source current location
 add_position_to_frame: True
 # if true, frames will be forwarded without position
-skip_frames_if_no_position: False
+drop_frames_if_no_position: False
 
 log_level: DEBUG
 redis:
