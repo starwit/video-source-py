@@ -15,6 +15,8 @@ mask_path: null
 reconnect_backoff_time: 1
 
 position_configuration:
+  # where to read position data
+  stream_id: "positionsource:self"
   # max delay in ms between frame time and position update time
   max_position_skew: 1000
   # if true, video source tries to read from position source current location
