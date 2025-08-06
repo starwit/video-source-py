@@ -10,7 +10,7 @@ license = "AGPL3"
 python = "^3.10"
 pydantic = "^2.0.0"
 opencv-python = "^4.7.0.72"
-visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "3.3.0" }
+visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "3.4.0" }
 visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = "python", tag = "0.11.2" }
 redis = "^5.0.0"
 pydantic-settings = "^2.0.3"

@@ -7,13 +7,13 @@ import time
 from pathlib import Path
 from typing import Any
 
-import redis
-import pybase64
 import cv2
 import numpy as np
+import pybase64
+import redis
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.sae_pb2 import SaeMessage, Shape, VideoFrame, PositionMessage
-from visionapi.common_pb2 import GeoCoordinate
+from visionapi.common_pb2 import GeoCoordinate, MessageType
+from visionapi.sae_pb2 import PositionMessage, SaeMessage, Shape, VideoFrame
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
@@ -102,6 +102,8 @@ class VideoSource:
                 else:
                     root_logger.error('no position data - not processing Detections')
                     return None
+
+        msg.type = MessageType.SAE
 
         return msg.SerializeToString()
     
