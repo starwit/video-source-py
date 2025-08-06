@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t starwitorg/sae-video-source-py:$(git rev-parse --short HEAD) .
+docker build -t starwitorg/sae-video-source-py:local .
