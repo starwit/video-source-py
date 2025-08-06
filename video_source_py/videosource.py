@@ -7,13 +7,14 @@ import time
 from pathlib import Path
 from typing import Any
 
-import redis
-import pybase64
 import cv2
 import numpy as np
+import pybase64
+import redis
 from prometheus_client import Counter, Histogram, Summary
-from visionapi.sae_pb2 import SaeMessage, Shape, VideoFrame, PositionMessage
-from visionapi.common_pb2 import GeoCoordinate
+from visionapi.common_pb2 import GeoCoordinate, MessageType
+from visionapi.sae_pb2 import PositionMessage, SaeMessage, Shape, VideoFrame
+from google.protobuf import json_format
 
 from .config import VideoSourceConfig
 from .framegrabber import FrameGrabber
@@ -92,16 +93,18 @@ class VideoSource:
         else:
             msg.frame.frame_data = frame.tobytes()
         
-        if self.config.position_configuration.add_position_to_frame:        
+        if self.config.camera_position_source is not None:        
             position = self._get_location(msg.frame)
             if position is not None:
                 msg.frame.camera_location.CopyFrom(position)
             else:
-                if not self.config.position_configuration.drop_frames_if_no_position:
-                    root_logger.debug('no position data - forwarding detections without position')
+                if not self.config.camera_position_source.drop_frames_if_no_position:
+                    self._logger.debug('no position data - forwarding detections without position')
                 else:
-                    root_logger.error('no position data - not processing Detections')
+                    self._logger.error('no position data - not processing Detections')
                     return None
+
+        msg.type = MessageType.SAE
 
         return msg.SerializeToString()
     
@@ -129,23 +132,25 @@ class VideoSource:
             cv2.subtract(src1=frame, src2=frame, dst=frame, mask=self._mask)
             
     def _get_location(self, frame) -> GeoCoordinate:
-        streamPositionMessage = self._redis_client.xrevrange(self.config.position_configuration.stream_id, count=1)
+        streamPositionMessage = self._redis_client.xrevrange(self.config.camera_position_source.stream_id, count=1)
         positionMessage = PositionMessage()
         if len(streamPositionMessage) > 0:
             decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
             positionMessage.ParseFromString(decodedPositionMessage)
         else:
-            root_logger.warning("Couldn't decode PositionMessage")
+            self._logger.warning("Could not retrieve PositionMessage")
             positionMessage.fix = False
         
         if positionMessage.fix == False:
-            root_logger.debug('no position fix')
+            self._logger.debug('No position fix')
             return None
-        if abs(positionMessage.timestamp_utc_ms - frame.timestamp_utc_ms) > self.config.position_configuration.max_position_skew:
-            root_logger.debug('position data and frame timestamp differ more than ' + str(self.config.position_configuration.max_position_skew))
+        
+        time_skew = abs(positionMessage.timestamp_utc_ms - frame.timestamp_utc_ms)
+        if time_skew > self.config.camera_position_source.max_position_skew:
+            self._logger.debug('Position data and frame timestamp differ more than ' + str(self.config.camera_position_source.max_position_skew))
             return None
         result = GeoCoordinate()
         result.latitude = positionMessage.geo_coordinate.latitude
         result.longitude = positionMessage.geo_coordinate.longitude
-        root_logger.debug(f"Add position {result}")
+        self._logger.debug(f"Add position {json_format.MessageToJson(result, indent=None)}, time_skew={time_skew} ms")
         return result

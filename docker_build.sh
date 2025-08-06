@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t starwitorg/sae-video-source-py:$(poetry version --short) .
+docker build -t starwitorg/sae-video-source-py:local .

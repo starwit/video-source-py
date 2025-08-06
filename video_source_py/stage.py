@@ -34,7 +34,7 @@ def run_stage():
 
     start_http_server(CONFIG.prometheus_port)
 
-    logger.info(f'Starting video source (id={CONFIG.id},max_fps={CONFIG.max_fps},redis={CONFIG.redis.host}:{CONFIG.redis.port},scale_width={CONFIG.scale_width})')
+    logger.info(f'Starting video source. Config: {CONFIG.model_dump_json(indent=2)}')
 
     # Init Videosource
     video_source = VideoSource(CONFIG)

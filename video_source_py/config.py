@@ -12,10 +12,9 @@ class RedisConfig(BaseModel):
     port: Annotated[int, Field(ge=1, le=65536)] = 6379
     output_stream_prefix: str = 'videosource'
 
-class PositionConfiguration(BaseModel):
+class PositionSourceConfiguration(BaseModel):
     stream_id: str = "positionsource:self"
     max_position_skew: int = 1500
-    add_position_to_frame: bool = True
     drop_frames_if_no_position: bool = False    
 
 class VideoSourceConfig(BaseSettings):
@@ -28,7 +27,7 @@ class VideoSourceConfig(BaseSettings):
     mask_path: Optional[Path] = None
     log_level: LogLevel = LogLevel.WARNING
     reconnect_backoff_time: float = 1
-    position_configuration: PositionConfiguration = PositionConfiguration()
+    camera_position_source: Optional[PositionSourceConfiguration] = None
     redis: RedisConfig = RedisConfig()
     prometheus_port: Annotated[int, Field(gt=1024, le=65536)] = 8000
 
