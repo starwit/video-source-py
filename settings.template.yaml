@@ -14,14 +14,13 @@ mask_path: null
 # How long to wait in seconds in case the connection is lost before the next retry
 reconnect_backoff_time: 1
 
-position_configuration:
+# if not configured, frames will have no cameraLocation set (i.e. feature disabled)
+camera_position_source:
   # where to read position data
   stream_id: "positionsource:self"
-  # max delay in ms between frame time and position update time
+  # max absolute offset in ms between frame time and position update time
   max_position_skew: 1000
-  # if true, video source tries to read from position source current location
-  add_position_to_frame: True
-  # if true, frames will be forwarded without position
+  # if true, frames will be discarded if there is no position or position is stale (according to skew)
   drop_frames_if_no_position: False
 
 log_level: DEBUG
